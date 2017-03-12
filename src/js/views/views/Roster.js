@@ -395,7 +395,7 @@ class Roster extends React.Component {
                             <th title="Rebounds Per Game">Reb</th>
                             <th title="Assists Per Game">Ast</th>
                             <th title="Player Efficiency Rating">PER</th>
-                            {editable ? <th title="Playing Time Modifier">PT <HelpPopover placement="left" title="Playing Time Modifier">
+                            {editable ? <th title="Playing Time Modifierrrr">PT <HelpPopover placement="left" title="Playing Time Modifier">
                                 <p>Your coach will divide up playing time based on ability and stamina. If you want to influence his judgement, your options are:</p>
                                 <p>
                                     <span style={ptStyles['0']}>0 No Playing Time</span><br />
@@ -410,6 +410,16 @@ class Roster extends React.Component {
                                 <p>However, if you just drafted a player and the regular season has not started yet, his contract is not guaranteed and you can release him for free.</p>
                             </HelpPopover></th> : null}
                             {showTradeFor ? <th>Trade For</th> : null}
+                            {editable ? <th title="Training Focus">Trn Focus <HelpPopover placement="left" title="Training Focus">
+                                <p>Your coach will divide up training focus based on ability, stamina or what player need to focus . If you want to influence his judgement, your options are:</p>
+                                <p>
+                                    <span style={ptStyles['0']}>Shooting</span><br />
+                                    <span style={ptStyles['0.75']}>Passing</span><br />
+                                    <span style={ptStyles['1']}>&nbsp;&nbsp;&nbsp;Let Coach Decide</span><br />
+                                    <span style={ptStyles['1.25']}>Defending</span><br />
+                                    <span style={ptStyles['1.75']}>Pyhscial</span>
+                                </p>
+                            </HelpPopover></th> : null}
                         </tr>
                     </thead>
                     <tbody id="roster-tbody">
