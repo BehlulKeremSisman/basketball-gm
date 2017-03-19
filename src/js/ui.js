@@ -67,6 +67,7 @@ async function updatePlayMenu(tx?: BackboardTx) {
         day: {label: "One day"},
         week: {label: "One week"},
         month: {label: "One month"},
+	m1v1:{label:"1v1"},
         untilPlayoffs: {label: "Until playoffs"},
         throughPlayoffs: {label: "Through playoffs"},
         dayLive: {url: helpers.leagueUrl(["live"]), label: "One day (live)"},
@@ -114,6 +115,7 @@ async function updatePlayMenu(tx?: BackboardTx) {
         // Offseason - free agency
         keys = ["day", "week", "untilPreseason"];
     }
+	keys.push("m1v1");
 
     const [unreadMessage, gamesInProgress, negotiationInProgress, phaseChangeInProgress] = await Promise.all([
         lock.unreadMessage(tx),
