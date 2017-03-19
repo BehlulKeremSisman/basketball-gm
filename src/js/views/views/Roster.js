@@ -37,6 +37,28 @@ const ptStyles = {
         color: '#fff',
     },
 };
+const trnStyles = {
+    shoot: {
+        backgroundColor: '#a00',
+        color: '#fff',
+    },
+    pass: {
+        backgroundColor: '#ff0',
+        color: '#000',
+    },
+    balanced: {
+        backgroundColor: '#ccc',
+        color: '#000',
+    },
+    defence: {
+        backgroundColor: '#0f0',
+        color: '#000',
+    },
+    fitness: {
+        backgroundColor: '#070',
+        color: '#fff',
+    },
+};
 
 const handleAutoSort = async () => {
     // Explicitly make sure writing is done before rosterAutoSort
@@ -127,6 +149,49 @@ const PlayingTime = ({p}) => {
     >
         {ptModifiers.map(({text, ptModifier}) => {
             return <option key={ptModifier} value={ptModifier}>{text}</option>;
+        })}
+    </select>;
+};
+const handleTrnChange = async (p, event) => {
+    const trnModifier = parseFloat(event.target.value);
+
+    if (isNaN(trnModifier)) {
+        return;
+    }
+
+    // NEVER UPDATE AI TEAMS
+    // This shouldn't be necessary, but just in case...
+    if (p.tid !== g.userTid) {
+        return;
+    }
+
+    // Update trnModifier in database
+    const t2 = await g.dbl.players.get(p.pid);
+    if (t2.trnModifier !== trnModifier) {
+        t2.trnModifier = trnModifier;
+        await g.dbl.players.put(t2);
+
+    // ??   ui.realtimeUpdate(["playerMovement"]);
+    // ??   league.updateLastDbChange();
+    }
+};
+const Training = ({p}) => {
+    const trnModifiers = [
+        {text: "shoot", trnModifier: "shoot"},
+        {text: "pass", trnModifier: "pass"},
+        {text: "balanced", trnModifier: "balanced"},
+        {text: "defence", trnModifier: "defence"},
+        {text: "fitness", trnModifier: "fitness"},
+    ];
+
+    return <select
+        className="form-control trn-modifier-select"
+        value={p.trnModifier}
+        onChange={event => handleTrnChange(p, event)}
+        style={trnStyles[String(p.trnModifier)]}
+    >
+        {trnModifiers.map(({text, trnModifier}) => {
+            return <option key={trnModifier} value={trnModifier}>{text}</option>;
         })}
     </select>;
 };
@@ -239,6 +304,7 @@ const RosterRow = clickable(props => {
         <td onClick={toggleClicked}>{helpers.round(p.stats.ast, 1)}</td>
         <td onClick={toggleClicked}>{helpers.round(p.stats.per, 1)}</td>
         {editable ? <td onClick={toggleClicked}><PlayingTime p={p} /></td> : null}
+        {editable ? <td onClick={toggleClicked}><Training p={p} /></td> : null}
         {editable ? <td onClick={toggleClicked}>
             <button
                 className="btn btn-default btn-xs"
@@ -263,6 +329,7 @@ RosterRow.propTypes = {
     handleReorderClick: React.PropTypes.func.isRequired,
     i: React.PropTypes.number.isRequired,
     p: React.PropTypes.object.isRequired,
+    t: React.PropTypes.object.isRequired,
     season: React.PropTypes.number.isRequired,
     selectedPid: React.PropTypes.number,
     showTradeFor: React.PropTypes.bool.isRequired,
@@ -395,7 +462,7 @@ class Roster extends React.Component {
                             <th title="Rebounds Per Game">Reb</th>
                             <th title="Assists Per Game">Ast</th>
                             <th title="Player Efficiency Rating">PER</th>
-                            {editable ? <th title="Playing Time Modifierrrr">PT <HelpPopover placement="left" title="Playing Time Modifier">
+                            {editable ? <th title="Playing Time Modifier">PT <HelpPopover placement="left" title="Playing Time Modifier">
                                 <p>Your coach will divide up playing time based on ability and stamina. If you want to influence his judgement, your options are:</p>
                                 <p>
                                     <span style={ptStyles['0']}>0 No Playing Time</span><br />
@@ -405,21 +472,24 @@ class Roster extends React.Component {
                                     <span style={ptStyles['1.75']}>++ Even More Playing Time</span>
                                 </p>
                             </HelpPopover></th> : null}
+
+                            {editable ? <th title="Training Focus">Trn Focus <HelpPopover placement="left" title="Training Focus">
+                                <p>Your coach will divide up training focus based on ability, stamina or what player need to focus . If you want to influence his judgement, your options are:</p>
+                                <p>
+                                    <span style={trnStyles['shoot']}>Shooting</span><br />
+                                    <span style={trnStyles['pass']}>Passing</span><br />
+                                    <span style={trnStyles['balanced']}>&nbsp;&nbsp;&nbsp;Let Coach Decide</span><br />
+                                    <span style={trnStyles['defence']}>Defending</span><br />
+                                    <span style={trnStyles['physical']}>Pyhscial</span>
+                                </p>
+                            </HelpPopover></th> : null}
+
                             {editable ? <th>Release <HelpPopover placement="left" title="Release Player">
                                 <p>To free up a roster spot, you can release a player from your team. You will still have to pay his salary (and have it count against the salary cap) until his contract expires (you can view your released players' contracts in your <a href={helpers.leagueUrl(["team_finances"])}>Team Finances</a>).</p>
                                 <p>However, if you just drafted a player and the regular season has not started yet, his contract is not guaranteed and you can release him for free.</p>
                             </HelpPopover></th> : null}
                             {showTradeFor ? <th>Trade For</th> : null}
-                            {editable ? <th title="Training Focus">Trn Focus <HelpPopover placement="left" title="Training Focus">
-                                <p>Your coach will divide up training focus based on ability, stamina or what player need to focus . If you want to influence his judgement, your options are:</p>
-                                <p>
-                                    <span style={ptStyles['0']}>Shooting</span><br />
-                                    <span style={ptStyles['0.75']}>Passing</span><br />
-                                    <span style={ptStyles['1']}>&nbsp;&nbsp;&nbsp;Let Coach Decide</span><br />
-                                    <span style={ptStyles['1.25']}>Defending</span><br />
-                                    <span style={ptStyles['1.75']}>Pyhscial</span>
-                                </p>
-                            </HelpPopover></th> : null}
+
                         </tr>
                     </thead>
                     <tbody id="roster-tbody">
