@@ -225,6 +225,13 @@ class DropdownLinks extends React.Component {
                 <span className="hidden-xs"><span className="glyphicon glyphicon-home" /></span>
                 <span className="visible-xs toggle-responsive-menu"><span className="glyphicon glyphicon-home" style={{marginRight: '5px'}} />League Dashboard</span>
             </NavItem> : null}
+        
+             {lid !== undefined ? <TopMenuDropdown long="TeamStrategy" short="TS" openId={this.state.openId} onToggle={this.handleTopMenuToggle}>
+                <MenuItem href={helpers.leagueUrl(['attacking'])}>Attacker</MenuItem>
+                <MenuItem href={helpers.leagueUrl(['defending'])}>Defender</MenuItem>
+                <MenuItem href={helpers.leagueUrl(['balance'])}>Balanced</MenuItem>
+            </TopMenuDropdown> : null}
+
             {lid !== undefined ? <TopMenuDropdown long="League" short="L" openId={this.state.openId} onToggle={this.handleTopMenuToggle}>
                 <MenuItem href={helpers.leagueUrl(['standings'])}>Standings</MenuItem>
                 <MenuItem href={helpers.leagueUrl(['playoffs'])}>Playoffs</MenuItem>
@@ -240,6 +247,7 @@ class DropdownLinks extends React.Component {
                 <MenuItem href={helpers.leagueUrl(['team_history'])}>History</MenuItem>
                 <MenuItem href={helpers.leagueUrl(['transactions'])}>Transactions</MenuItem>
             </TopMenuDropdown> : null}
+
             {lid !== undefined ? <TopMenuDropdown long="Players" short="P" openId={this.state.openId} onToggle={this.handleTopMenuToggle}>
                 <MenuItem href={helpers.leagueUrl(['free_agents'])}>Free Agents</MenuItem>
                 <MenuItem href={helpers.leagueUrl(['trade'])}>Trade</MenuItem>
