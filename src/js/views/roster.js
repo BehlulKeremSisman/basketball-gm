@@ -42,7 +42,7 @@ function updateRoster(inputs, updateEvents, state) {
                 ot: tx,
             });
 
-            const attrs = ["pid", "tid", "draft", "name", "age", "contract", "cashOwed", "rosterOrder", "injury", "ptModifier", "watch", "gamesUntilTradable"];  // tid and draft are used for checking if a player can be released without paying his salary
+            const attrs = ["pid", "tid", "draft", "name", "age", "contract", "cashOwed", "rosterOrder", "injury", "ptModifier","trnModifier","watch", "gamesUntilTradable"];  // tid and draft are used for checking if a player can be released without paying his salary
             const ratings = ["ovr", "pot", "dovr", "dpot", "skills", "pos"];
             const stats = ["gp", "min", "pts", "trb", "ast", "per", "yearsWithTeam"];
 
@@ -93,6 +93,7 @@ function updateRoster(inputs, updateEvents, state) {
 
                     // Convert ptModifier to string so it doesn't cause unneeded knockout re-rendering
                     players[i].ptModifier = String(players[i].ptModifier);
+                    players[i].trnModifier = String(players[i].trnModifier);
                 }
 
                 vars.players = players;

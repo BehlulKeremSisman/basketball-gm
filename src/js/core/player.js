@@ -607,6 +607,7 @@ async function addToFreeAgents(tx: ?BackboardTx, p: Player, phase: Phase, baseMo
     p.tid = g.PLAYER.FREE_AGENT;
 
     p.ptModifier = 1; // Reset
+    p.trnModifier = 1;
 
     // The put doesn't always work in Chrome. No idea why.
     await dbOrTx.players.put(p);
@@ -1005,6 +1006,7 @@ function generate(
         injury: {type: "Healthy", gamesRemaining: 0},
         lastName: nameInfo.lastName,
         ptModifier: 1,
+        trnModifier: 1,
         ratings: [ratings],
         retiredYear: null,
         rosterOrder: 666, // Will be set later
@@ -1878,7 +1880,7 @@ function augmentPartialPlayer(p: any, scoutingRank: number): PlayerWithStats {
     const pg = generate(p.tid, age, "", 0, 0, g.startingSeason - age, true, scoutingRank);
 
     // Optional things
-    const simpleDefaults = ["awards", "born", "college", "contract", "draft", "face", "freeAgentMood", "gamesUntilTradable", "hgt", "hof", "imgURL", "injury", "ptModifier", "retiredYear", "rosterOrder", "watch", "weight", "yearsFreeAgent"];
+    const simpleDefaults = ["awards", "born", "college", "contract", "draft", "face", "freeAgentMood", "gamesUntilTradable", "hgt", "hof", "imgURL", "injury", "ptModifier","trnModifier", "retiredYear", "rosterOrder", "watch", "weight", "yearsFreeAgent"];
     for (let i = 0; i < simpleDefaults.length; i++) {
         if (!p.hasOwnProperty(simpleDefaults[i])) {
             p[simpleDefaults[i]] = pg[simpleDefaults[i]];

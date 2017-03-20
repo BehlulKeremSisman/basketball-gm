@@ -38,23 +38,23 @@ const ptStyles = {
     },
 };
 const trnStyles = {
-    shoot: {
-        backgroundColor: '#a00',
-        color: '#fff',
-    },
-    pass: {
-        backgroundColor: '#ff0',
-        color: '#000',
-    },
-    balanced: {
+    0: {
         backgroundColor: '#ccc',
         color: '#000',
     },
-    defence: {
+    1: {
+        backgroundColor: '#ff0',
+        color: '#000',
+    },
+    2: {
+        backgroundColor: '#a01',
+        color: '#fff',
+    },
+    3: {
         backgroundColor: '#0f0',
         color: '#000',
     },
-    fitness: {
+    4: {
         backgroundColor: '#070',
         color: '#fff',
     },
@@ -152,6 +152,8 @@ const PlayingTime = ({p}) => {
         })}
     </select>;
 };
+
+
 const handleTrnChange = async (p, event) => {
     const trnModifier = parseFloat(event.target.value);
 
@@ -165,23 +167,24 @@ const handleTrnChange = async (p, event) => {
         return;
     }
 
-    // Update trnModifier in database
-    const t2 = await g.dbl.players.get(p.pid);
-    if (t2.trnModifier !== trnModifier) {
-        t2.trnModifier = trnModifier;
-        await g.dbl.players.put(t2);
 
-    // ??   ui.realtimeUpdate(["playerMovement"]);
-    // ??   league.updateLastDbChange();
+    // Update trnModifier in database
+    const p2 = await g.dbl.players.get(p.pid);
+    if (p2.trnModifier !== trnModifier) {
+        p2.trnModifier = trnModifier;
+        await g.dbl.players.put(p2);
+
+        ui.realtimeUpdate(["playerMovement"]);
+        league.updateLastDbChange();
     }
 };
 const Training = ({p}) => {
     const trnModifiers = [
-        {text: "shoot", trnModifier: "shoot"},
-        {text: "pass", trnModifier: "pass"},
-        {text: "balanced", trnModifier: "balanced"},
-        {text: "defence", trnModifier: "defence"},
-        {text: "fitness", trnModifier: "fitness"},
+        {text: "Balanced", trnModifier: "0"},
+        {text: "Pass", trnModifier: "1"},
+        {text: "Shoot", trnModifier: "2"},
+        {text: "Defence", trnModifier: "3"},
+        {text: "Fitness", trnModifier: "4"},
     ];
 
     return <select
@@ -199,6 +202,10 @@ const Training = ({p}) => {
 PlayingTime.propTypes = {
     p: React.PropTypes.object.isRequired,
 };
+Training.propTypes = {
+    p: React.PropTypes.object.isRequired,
+};
+
 
 const ReorderHandle = ({i, onClick, pid, selectedPid}) => {
     let backgroundColor = 'rgb(91, 192, 222)';
@@ -473,14 +480,14 @@ class Roster extends React.Component {
                                 </p>
                             </HelpPopover></th> : null}
 
-                            {editable ? <th title="Training Focus">Trn Focus <HelpPopover placement="left" title="Training Focus">
+                            {editable ? <th title="Training Focus">TRN <HelpPopover placement="left" title="Training">
                                 <p>Your coach will divide up training focus based on ability, stamina or what player need to focus . If you want to influence his judgement, your options are:</p>
                                 <p>
-                                    <span style={trnStyles['shoot']}>Shooting</span><br />
-                                    <span style={trnStyles['pass']}>Passing</span><br />
-                                    <span style={trnStyles['balanced']}>&nbsp;&nbsp;&nbsp;Let Coach Decide</span><br />
-                                    <span style={trnStyles['defence']}>Defending</span><br />
-                                    <span style={trnStyles['physical']}>Pyhscial</span>
+                                    <span style={trnStyles['0']}>Shooting(Free throw, 2 or 3 points shots)</span><br />
+                                    <span style={trnStyles['1']}>Passing(Playmaking and fast break pass)</span><br />
+                                    <span style={trnStyles['2']}>Balanced(Mixed training)</span><br />
+                                    <span style={trnStyles['3']}>Defending(Defending, positions)</span><br />
+                                    <span style={trnStyles['4']}>Fitness(Focusing physical training)</span>
                                 </p>
                             </HelpPopover></th> : null}
 
