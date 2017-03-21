@@ -422,6 +422,9 @@ function develop<T: {born: {loc: string, year: number}, pos?: string, ratings: P
         for (let j = 0; j < ratingKeys.length; j++) {
             let baseChangeLocal;
             if (age <= 24) {
+              if(p.trnModifier == 4){ //focus fitness oldugunda speed jump endurance ratinglerinin artma ihtimalini artir
+                baseChange = baseChange + 1;
+              }
                 baseChangeLocal = baseChange;
             } else if (age <= 30) {
                 baseChangeLocal = baseChange - 1;
@@ -434,12 +437,18 @@ function develop<T: {born: {loc: string, year: number}, pos?: string, ratings: P
         // Ratings that can only increase a little, and only when young. Decrease slowly when old.
         ratingKeys = ["drb", "pss", "reb"];
         for (let j = 0; j < ratingKeys.length; j++) {
+          if(j == 1 && p.trnModifier == 1){ // focus pass oldugunda pass rating artma ihtimalini artir
+            baseChange = baseChange + 1;
+          }
             p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + helpers.bound(baseChange * random.uniform(0.5, 1.5), -1, 10));
         }
 
         // Ratings that can increase a lot, but only when young. Decrease when old.
         ratingKeys = ["stre", "dnk", "blk", "stl"];
         for (let j = 0; j < ratingKeys.length; j++) {
+          if(p.trnModifier == 3){ // focus defence oldugunda defansif ratingleri artma ihtimalini artir
+            baseChange = baseChange + 1;
+          }
             p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChange * random.uniform(0.5, 1.5));
         }
 
@@ -447,6 +456,9 @@ function develop<T: {born: {loc: string, year: number}, pos?: string, ratings: P
         ratingKeys = ["ins", "ft", "fg", "tp"];
         for (let j = 0; j < ratingKeys.length; j++) {
             let baseChangeLocal;
+            if(p.trnModifier == 2){ // focus shoot oldugunda inside scoring, free throw, 2-3 point shootlari arttir
+                baseChange = baseChange + 1;
+            }
             if (age <= 24) {
                 baseChangeLocal = baseChange;
             } else if (age <= 30) {
@@ -607,7 +619,7 @@ async function addToFreeAgents(tx: ?BackboardTx, p: Player, phase: Phase, baseMo
     p.tid = g.PLAYER.FREE_AGENT;
 
     p.ptModifier = 1; // Reset
-    p.trnModifier = 1;
+    p.trnModifier = 0;
 
     // The put doesn't always work in Chrome. No idea why.
     await dbOrTx.players.put(p);
@@ -1006,7 +1018,7 @@ function generate(
         injury: {type: "Healthy", gamesRemaining: 0},
         lastName: nameInfo.lastName,
         ptModifier: 1,
-        trnModifier: 1,
+        trnModifier: 0, // default olarak balance olmasi icin (balanced = 0)
         ratings: [ratings],
         retiredYear: null,
         rosterOrder: 666, // Will be set later

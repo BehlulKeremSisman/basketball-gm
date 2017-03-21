@@ -579,7 +579,7 @@ async function loadTeams(tx) {
 
             // Reset trnModifier for AI teams. This should not be necessary since it should always be 1, but let's be safe.
             if (!g.userTids.includes(t.id)) {
-                p.trnModifier = 1;
+                p.trnModifier = 0; // default olarak balanced olmasi icin(balance = 0)
             }
 
             // These use the same formulas as the skill definitions in player.skills!
