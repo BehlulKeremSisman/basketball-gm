@@ -234,6 +234,7 @@ export type PlayerWithoutPid = {
     lastName: string,
     pos?: string, // Only in players from custom league files
     ptModifier: number,
+    trnModifier: number,
     ratings: PlayerRatings[],
     retiredYear: null | number,
     rosterOrder: number,

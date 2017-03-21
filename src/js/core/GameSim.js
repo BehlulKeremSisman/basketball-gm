@@ -22,6 +22,7 @@ type PlayerGameSim = {
     skills: PlayerSkill[],
     injured: boolean,
     ptModifier: number,
+    trnModifier: number,
 };
 type TeamGameSim = {
     id: number,
@@ -225,6 +226,7 @@ class GameSim {
                 delete this.team[t].player[p].valueNoPot;
                 delete this.team[t].player[p].compositeRating;
                 delete this.team[t].player[p].ptModifier;
+                delete this.team[t].player[p].trnModifier;
             }
         }
 
