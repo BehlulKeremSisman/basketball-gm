@@ -1,5 +1,5 @@
 // @flow
-
+//oyuncuların shot block top çalma tarzı istatistikleri sınıfta
 import g from '../globals';
 import * as helpers from '../util/helpers';
 import * as random from '../util/random';
@@ -147,8 +147,8 @@ class GameSim {
         this.t = g.quarterLength; // Game clock, in minutes
 
         // Parameters
-        this.synergyFactor = 0.1; // How important is synergy?
-
+    //  balanced // this.synergyFactor = 0.1; // How important is synergy?
+        this.synergyFactor = 0.2; //attacking
         this.homeCourtAdvantage();
 
         this.lastScoringPlay = [];
@@ -648,6 +648,10 @@ class GameSim {
 
         return "stl";
     }
+    //shoot kısmı
+
+
+
 
     /**
      * Shot.
@@ -666,17 +670,18 @@ class GameSim {
             const ratios = this.ratingArray("passing", this.o, 2);
             passer = pickPlayer(ratios, shooter);
         }
-
+        //defansif oynatırken math.random(ifin içinde) oranını azalt ofansif için tam tersi
         // Pick the type of shot and store the success rate (with no defense) in probMake and the probability of an and one in probAndOne
         let probAndOne;
         let probMake;
         let probMissAndFoul;
         let type;
-        if (this.team[this.o].player[p].compositeRating.shootingThreePointer > 0.5 && Math.random() < (0.35 * this.team[this.o].player[p].compositeRating.shootingThreePointer)) {
+        if (this.team[this.o].player[p].compositeRating.shootingThreePointer > 0.5 && Math.random()*0.5 < (0.35 * this.team[this.o].player[p].compositeRating.shootingThreePointer)) {
             // Three pointer
             type = "threePointer";
             probMissAndFoul = 0.02;
-            probMake = this.team[this.o].player[p].compositeRating.shootingThreePointer * 0.35 + 0.24;
+            //probMake = this.team[this.o].player[p].compositeRating.shootingThreePointer * 0.35 + 0.24; //balanced
+            probMake = this.team[this.o].player[p].compositeRating.shootingThreePointer * 0.45 + 0.30;  //attacking
             probAndOne = 0.01;
         } else {
             const r1 = Math.random() * this.team[this.o].player[p].compositeRating.shootingMidRange;
@@ -686,19 +691,22 @@ class GameSim {
                 // Two point jumper
                 type = "midRange";
                 probMissAndFoul = 0.07;
-                probMake = this.team[this.o].player[p].compositeRating.shootingMidRange * 0.3 + 0.29;
+                //probMake = this.team[this.o].player[p].compositeRating.shootingMidRange * 0.3 + 0.29; //balanced
+                probMake = this.team[this.o].player[p].compositeRating.shootingMidRange * 0.40 + 0.31; //attacking
                 probAndOne = 0.05;
             } else if (r2 > r3) {
                 // Dunk, fast break or half court
                 type = "atRim";
                 probMissAndFoul = 0.37;
-                probMake = this.team[this.o].player[p].compositeRating.shootingAtRim * 0.3 + 0.52;
+                //probMake = this.team[this.o].player[p].compositeRating.shootingMidRange * 0.3 + 0.29; //balanced
+                probMake = this.team[this.o].player[p].compositeRating.shootingMidRange * 0.45 + 0.30; //attacking
                 probAndOne = 0.25;
             } else {
                 // Post up
                 type = "lowPost";
                 probMissAndFoul = 0.33;
-                probMake = this.team[this.o].player[p].compositeRating.shootingLowPost * 0.3 + 0.37;
+                //probMake = this.team[this.o].player[p].compositeRating.shootingMidRange * 0.3 + 0.29; //balanced
+                probMake = this.team[this.o].player[p].compositeRating.shootingMidRange * 0.5 + 0.32; //attacking
                 probAndOne = 0.15;
             }
         }
@@ -748,6 +756,10 @@ class GameSim {
         }
         return this.doReb(); // orb or drb
     }
+//shoot kısmı bitişi
+
+
+
 
     /**
      * Probability that a shot taken this possession is blocked.
