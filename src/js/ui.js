@@ -67,7 +67,7 @@ async function updatePlayMenu(tx?: BackboardTx) {
         day: {label: "One day"},
         week: {label: "One week"},
         month: {label: "One month"},
-	m1v1:{label:"1v1"},
+	    m1v1: {label:"1v1"},
         untilPlayoffs: {label: "Until playoffs"},
         throughPlayoffs: {label: "Through playoffs"},
         dayLive: {url: helpers.leagueUrl(["live"]), label: "One day (live)"},
