@@ -569,12 +569,18 @@ async function loadTeams(tx) {
                 injury: players[i].injury,
                 injured: players[i].injury.type !== "Healthy",
                 ptModifier: players[i].ptModifier,
+                trnModifier: players[i].trnModifier,
             };
 
             // Reset ptModifier for AI teams. This should not be necessary since it should always be 1, but let's be safe.
             if (!g.userTids.includes(t.id)) {
                 p.ptModifier = 1;
             }
+
+            // Reset trnModifier for AI teams. This should not be necessary since it should always be 1, but let's be safe.
+ -            if (!g.userTids.includes(t.id)) {
+ -                p.trnModifier = 0; // default olarak balanced olmasi icin(balance = 0)
+ -            }
 
             // These use the same formulas as the skill definitions in player.skills!
             for (const k of Object.keys(g.compositeWeights)) {
