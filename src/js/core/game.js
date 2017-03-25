@@ -578,9 +578,9 @@ async function loadTeams(tx) {
             }
 
             // Reset trnModifier for AI teams. This should not be necessary since it should always be 1, but let's be safe.
-            if (!g.userTids.includes(t.id)) {
-                p.trnModifier = 0; // default olarak balanced olmasi icin(balance = 0)
-            }
+ -            if (!g.userTids.includes(t.id)) {
+ -                p.trnModifier = 0; // default olarak balanced olmasi icin(balance = 0)
+ -            }
 
             // These use the same formulas as the skill definitions in player.skills!
             for (const k of Object.keys(g.compositeWeights)) {
@@ -611,6 +611,24 @@ async function loadTeams(tx) {
 
         return t;
     }));
+}
+
+async function play1v1() {
+    const objectStores = ["players", "playerFeats", "playerStats", "teams", "schedule", "teamSeasons"];
+    await g.dbl.tx(objectStores, "readwrite", async tx => {
+            //const teams = await loadTeams(tx);
+            //console.log(teams);
+            const p1 = await tx.players.get(Math.floor((Math.random() * 600) + 1));
+            const p2 = await tx.players.get(Math.floor((Math.random() * 600) + 1));
+            const winner = (Math.random() < 0.5) ? p1 : p2;
+            logEvent(null, {
+             //       type: "injured",
+                    text: `${p1.firstName} ${p1.lastName} vs ${p2.firstName} ${p2.lastName}<br>Winner is: ${winner.firstName} ${winner.lastName}`,
+                    showNotification: true,
+                //    pids: [1],
+                //    tids: [1],
+            });
+    });
 }
 
 /**
@@ -846,4 +864,5 @@ async function play(numDays: number, start?: boolean = true, gidPlayByPlay?: num
 export {
     // eslint-disable-next-line import/prefer-default-export
     play,
+    play1v1,
 };

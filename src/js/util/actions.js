@@ -12,6 +12,10 @@ import * as phase from '../core/phase';
 import * as season from '../core/season';
 import * as trade from '../core/trade';
 import * as helpers from './helpers';
+import logEvent from './logEvent';
+import * as player from '../core/player';
+import * as team from '../core/team';
+import Promise from 'bluebird';
 
 const liveGame = async (gid: number) => {
     ui.realtimeUpdate([], helpers.leagueUrl(["live_game"]), () => {
@@ -144,6 +148,11 @@ const playMenu = {
             const numDays = await season.getDaysLeftSchedule();
             game.play(numDays);
         }
+    },
+    m1v1: async () => {
+        await ui.updateStatus("1v1 Playing..."); // For quick UI updating, before await
+        await game.play1v1();
+        await ui.updateStatus("Idle");
     },
 
     throughPlayoffs: async () => {
