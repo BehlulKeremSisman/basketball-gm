@@ -216,7 +216,7 @@ class DropdownLinks extends React.Component {
             openId: id === this.state.openId ? undefined : id,
         });
     }
-
+        
     render() {
         const {godMode, lid} = this.props;
 
@@ -227,11 +227,11 @@ class DropdownLinks extends React.Component {
             </NavItem> : null}
         
              <select id="TeamStrategy">
-             <option>Attacker</option>
-             <option>Balanced</option>
-             <option>Defender</option>
+             <option value="1">Attacker</option>
+             <option value="2">Balanced</option>
+             <option value="3">Defender</option>
              </select>
-
+              
             {lid !== undefined ? <TopMenuDropdown long="League" short="L" openId={this.state.openId} onToggle={this.handleTopMenuToggle}>
                 <MenuItem href={helpers.leagueUrl(['standings'])}>Standings</MenuItem>
                 <MenuItem href={helpers.leagueUrl(['playoffs'])}>Playoffs</MenuItem>
@@ -299,7 +299,7 @@ class DropdownLinks extends React.Component {
         </Nav>;
     }
 }
-
+        
 DropdownLinks.propTypes = {
     godMode: React.PropTypes.bool.isRequired,
     lid: React.PropTypes.number,
