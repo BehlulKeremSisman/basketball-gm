@@ -358,6 +358,7 @@ async function propose(forceTrade?: boolean = false): Promise<[boolean, ?string]
                     // Don't make traded players untradable
                     //p.gamesUntilTradable = 15;
                     p.ptModifier = 1; // Reset
+                    p.trnModifier = 0; // Reset
                     if (g.phase <= g.PHASE.PLAYOFFS) {
                         p = player.addStatsRow(tx, p, g.phase === g.PHASE.PLAYOFFS);
                     }
