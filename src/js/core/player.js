@@ -71,7 +71,7 @@ function fuzzRating(rating: number, fuzz: number): number {
     return Math.round(helpers.bound(rating + fuzz, 0, 100));
 }
 
-function hasSkill(ratings: PlayerRatings, components: RatingKey[], weights?: number[]): boolean {
+function hasSkill(ratings: PlayerRatings, components: RatingKey[], weights ? : number[]): boolean {
     if (weights === undefined) {
         // Default: array of ones with same size as components
         weights = [];
@@ -165,7 +165,7 @@ function genContract(
     //amount = amount * (g.maxContract - g.minContract) + g.minContract;
     let amount = ((p.value - 1) / 100 - 0.45) * 3.3 * (g.maxContract - g.minContract) + g.minContract;
     if (randomizeAmount) {
-        amount *= helpers.bound(random.realGauss(1, 0.1), 0, 2);  // Randomize
+        amount *= helpers.bound(random.realGauss(1, 0.1), 0, 2); // Randomize
     }
 
     // Expiration
@@ -207,9 +207,12 @@ function genContract(
         amount = 0;
     }
 
-    amount = 50 * Math.round(amount / 50);  // Make it a multiple of 50k
+    amount = 50 * Math.round(amount / 50); // Make it a multiple of 50k
 
-    return {amount, exp: expiration};
+    return {
+        amount,
+        exp: expiration
+    };
 }
 
 /**
@@ -221,7 +224,10 @@ function genContract(
  * @param {boolean} signed Is this an official signed contract (true), or just part of a negotiation (false)?
  * @return {Object} Updated player object.
  */
-function setContract<T: {contract: PlayerContract, salaries: PlayerSalary[]}>(
+function setContract < T: {
+    contract: PlayerContract,
+    salaries: PlayerSalary[]
+} > (
     p: T,
     contract: PlayerContract,
     signed: boolean,
@@ -237,7 +243,10 @@ function setContract<T: {contract: PlayerContract, salaries: PlayerSalary[]}>(
         }
 
         for (let i = start; i <= p.contract.exp; i++) {
-            p.salaries.push({season: i, amount: contract.amount});
+            p.salaries.push({
+                season: i,
+                amount: contract.amount
+            });
         }
     }
 
@@ -272,13 +281,13 @@ function pos(ratings: PlayerRatings): string {
     // No height requirements for guards
     // PG is a fast ball handler, or a super ball handler
     if ((ratings.spd >= 60 && (ratings.pss + ratings.drb) >= 90) ||
-            ((ratings.pss + ratings.drb) >= 150)) {
+        ((ratings.pss + ratings.drb) >= 150)) {
         pg = true;
     }
 
     // SG is secondary ball handler and at least one of: slasher, shooter, or a decent defender
     if ((ratings.drb + ratings.pss) >= 100 &&
-            ((ratings.spd >= 70 && ratings.dnk >= 70 && ratings.drb > 40) ||
+        ((ratings.spd >= 70 && ratings.dnk >= 70 && ratings.drb > 40) ||
             (ratings.fg >= 70 && ratings.tp >= 70) ||
             (ratings.hgt >= 30 && ratings.spd >= 80 && ratings.stl >= 70))) {
         sg = true;
@@ -385,11 +394,18 @@ function calcBaseChange(age: number, potentialDifference: number): number {
  * @param {number=} coachingRank From 1 to g.numTeams (default 30), where 1 is best coaching staff and g.numTeams is worst. Default is 15.5
  * @return {Object} Updated player object.
  */
-function develop<T: {born: {loc: string, year: number}, pos?: string, ratings: PlayerRatings[]}>(
+function develop < T: {
+    born: {
+        loc: string,
+        year: number
+    },
+    pos ? : string,
+    ratings: PlayerRatings[]
+} > (
     p: T,
-    years?: number = 1,
-    newPlayer?: boolean = false,
-    coachingRank?: number = 15.5,
+    years ? : number = 1,
+    newPlayer ? : boolean = false,
+    coachingRank ? : number = 15.5,
 ): T {
     const r = p.ratings.length - 1;
 
@@ -416,57 +432,138 @@ function develop<T: {born: {loc: string, year: number}, pos?: string, ratings: P
         } else {
             baseChange *= ((coachingRank - 1) * (0.5) / (g.numTeams - 1) + 0.75);
         }
-
+        /* trnModifier == 0 -> Balanced
+           trnModifier == 1 -> Pass(pss)
+           trnModifier == 2 -> Shoot(ins,ft,fg,tp)
+           trnModifier == 3 -> Defence(stl, blk)
+           trnModifier == 4 -> Fitness(spd,jmp,endu)
+        */
         // Ratings that can only increase a little, and only when young. Decrease when old.
         let ratingKeys = ["spd", "jmp", "endu"];
         for (let j = 0; j < ratingKeys.length; j++) {
-            let baseChangeLocal;
+            let baseChangeLocalFitness;
             if (age <= 24) {
-              if(p.trnModifier == 4){ //focus fitness oldugunda speed jump endurance ratinglerinin artma ihtimalini artir
-                baseChange = baseChange + 1;
-              }
-                baseChangeLocal = baseChange;
+                baseChangeLocalFitness = baseChange;  // Balanced oldugu durum
+                if (p.trnModifier == 4) {
+                    baseChangeLocalFitness = baseChangeLocalFitness + 20;
+                }
+                if (p.trnModifier == 1 || p.trnModifier == 2 || p.trnModifier == 3) {
+                    baseChangeLocalFitness = baseChange - 2;
+                }
             } else if (age <= 30) {
-                baseChangeLocal = baseChange - 1;
+                baseChangeLocalFitness = baseChange - 1;  // Balanced oldugu durum
+                if (p.trnModifier == 4) {
+                    baseChangeLocalFitness = baseChangeLocalFitness + 9;
+                }
+                if (p.trnModifier == 1 || p.trnModifier == 2 || p.trnModifier == 3) {
+                    baseChangeLocalFitness = baseChange - 2;
+                }
             } else {
-                baseChangeLocal = baseChange - 2.5;
+                baseChangeLocalFitness = baseChange - 2.5; // balanced ve fitness oldugu durum
+                if (p.trnModifier == 1 || p.trnModifier == 2 || p.trnModifier == 3) {
+                    baseChangeLocalFitness = baseChange - 2;
+                }
             }
-            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + helpers.bound(baseChangeLocal * random.uniform(0.5, 1.5), -20, 10));
+
+            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocalFitness * random.uniform(0.5, 1.5));
         }
 
         // Ratings that can only increase a little, and only when young. Decrease slowly when old.
         ratingKeys = ["drb", "pss", "reb"];
         for (let j = 0; j < ratingKeys.length; j++) {
-          if(j == 1 && p.trnModifier == 1){ // focus pass oldugunda pass rating artma ihtimalini artir
-            baseChange = baseChange + 1;
-          }
-            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + helpers.bound(baseChange * random.uniform(0.5, 1.5), -1, 10));
+            let baseChangeLocalPass;
+            if (age <= 24) {
+                baseChangeLocalPass = baseChange;  // Balanced oldugu durum
+                if (p.trnModifier == 1 && j == 1) {
+                    baseChangeLocalPass = baseChangeLocalPass + 20;
+                }
+                if (p.trnModifier == 1 && (j == 0 || j == 2)) {
+                    baseChangeLocalPass = baseChange - 2;
+                }
+                if (p.trnModifier == 2 || p.trnModifier == 3 || p.trnModifier == 4) {
+                    baseChangeLocalPass = baseChange - 2;
+                }
+            } else if (age <= 30) {
+                baseChangeLocalPass = baseChange - 1;  // Balanced oldugu durum
+                if (p.trnModifier == 1 && j == 1) {
+                    baseChangeLocalPass = baseChangeLocalPass + 9;
+                }
+                if (p.trnModifier == 1 && (j == 0 || j == 2)) {
+                    baseChangeLocalPass = baseChange - 2;
+                }
+                if (p.trnModifier == 2 || p.trnModifier == 3 || p.trnModifier == 4) {
+                    baseChangeLocalPass = baseChange - 2;
+                }
+            } else {
+                baseChangeLocalPass = baseChange - 2.5;  // Balanced ve pass oldugu durum
+                if (p.trnModifier == 2 || p.trnModifier == 3 || p.trnModifier == 4) {
+                    baseChangeLocalPass = baseChange - 2;
+                }
+            }
+
+            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocalPass * random.uniform(0.5, 1.5));
         }
 
         // Ratings that can increase a lot, but only when young. Decrease when old.
         ratingKeys = ["stre", "dnk", "blk", "stl"];
         for (let j = 0; j < ratingKeys.length; j++) {
-          if(p.trnModifier == 3){ // focus defence oldugunda defansif ratingleri artma ihtimalini artir
-            baseChange = baseChange + 1;
-          }
-            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChange * random.uniform(0.5, 1.5));
+            let baseChangeLocalDefence;
+            if (age <= 24) {
+                baseChangeLocalDefence = baseChange;  // Balanced oldugu durum
+                if (p.trnModifier == 3 && (j == 2 || j == 3)) {
+                    baseChangeLocalDefence = baseChangeLocalDefence + 20;
+                }
+                if (p.trnModifier == 3 && (j == 0 || j == 1)) {
+                    baseChangeLocalDefence = baseChange - 2;
+                }
+                if (p.trnModifier == 1 || p.trnModifier == 2 || p.trnModifier == 4) {
+                    baseChangeLocalDefence = baseChange - 2;
+                }
+            } else if (age <= 30) {
+                baseChangeLocalDefence = baseChange - 1;  // Balanced oldugu durum
+                if (p.trnModifier == 3 && (j == 2 || j == 3)) {
+                    baseChangeLocalDefence = baseChangeLocalDefence + 9;
+                }
+                if (p.trnModifier == 3 && (j == 0 || j == 1)) {
+                    baseChangeLocalDefence = baseChange - 2;
+                }
+            } else {
+                baseChangeLocalDefence = baseChange - 2.5;  // Balanced defence oldugu durum
+                if (p.trnModifier == 3 && (j == 0 || j == 1)) {
+                    baseChangeLocalDefence = baseChange - 2;
+                }
+            }
+            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocalDefence * random.uniform(0.5, 1.5));
         }
 
         // Ratings that increase most when young, but can continue increasing for a while and only decrease very slowly.
         ratingKeys = ["ins", "ft", "fg", "tp"];
         for (let j = 0; j < ratingKeys.length; j++) {
-            let baseChangeLocal;
-            if(p.trnModifier == 2){ // focus shoot oldugunda inside scoring, free throw, 2-3 point shootlari arttir
-                baseChange = baseChange + 1;
-            }
+            let baseChangeLocalShoot;
             if (age <= 24) {
-                baseChangeLocal = baseChange;
+                baseChangeLocalShoot = baseChange;  // Balanced oldugu durum
+                if (p.trnModifier == 2) {
+                    baseChangeLocalShoot = baseChangeLocalShoot + 20;
+                }
+                if (p.trnModifier == 1 || p.trnModifier == 3 || p.trnModifier == 4) {
+                    baseChangeLocalShoot = baseChange - 2;
+                }
             } else if (age <= 30) {
-                baseChangeLocal = baseChange + 1;
+                baseChangeLocalShoot = baseChange - 1;  // Balanced oldugu durum
+                if (p.trnModifier == 2) {
+                    baseChangeLocalShoot = baseChangeLocalShoot + 9;
+                }
+                if (p.trnModifier == 1 || p.trnModifier == 3 || p.trnModifier == 4) {
+                    baseChangeLocalShoot = baseChange - 2;
+                }
             } else {
-                baseChangeLocal = baseChange + 2.5;
+                baseChangeLocalShoot = baseChange - 2.5;  // Balanced ve shoot oldugu durum
+                if (p.trnModifier == 1 || p.trnModifier == 3 || p.trnModifier == 4) {
+                    baseChangeLocalShoot = baseChange - 2;
+                }
             }
-            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocal * random.uniform(0.5, 1.5));
+
+            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocalShoot * random.uniform(0.5, 1.5));
         }
 
         // Update overall and potential
@@ -510,13 +607,13 @@ function develop<T: {born: {loc: string, year: number}, pos?: string, ratings: P
  * @param {number} amount Number to be added to each rating (can be negative).
  * @return {Object} Updated player object.
  */
-function bonus<T: {
+function bonus < T: {
     born: {
         loc: string,
         year: number,
     },
     ratings: PlayerRatings[],
-}>(p: T, amount: number): T {
+} > (p: T, amount: number): T {
     // Make sure age is always defined
     const age = g.season - p.born.year;
 
@@ -547,7 +644,7 @@ function bonus<T: {
  * @param {(IDBObjectStore|IDBTransaction|null)} ot An IndexedDB object store or transaction on teamSeasons; if null is passed, then a new transaction will be used.
  * @return {Promise} Array of base moods, one for each team.
  */
-async function genBaseMoods(tx: ?BackboardTx): Promise<number[]> {
+async function genBaseMoods(tx: ? BackboardTx): Promise < number[] > {
     const dbOrTx = tx !== undefined && tx !== null ? tx : g.dbl;
     const teamSeasons = await dbOrTx.teamSeasons.index("season, tid").getAll(backboard.bound([g.season], [g.season, '']));
 
@@ -590,7 +687,7 @@ async function genBaseMoods(tx: ?BackboardTx): Promise<number[]> {
  * @param {Array.<number>} baseMoods Vector of base moods for each team from 0 to 1, as generated by genBaseMoods.
  * @return {Promise}
  */
-async function addToFreeAgents(tx: ?BackboardTx, p: Player, phase: Phase, baseMoods: number[]) {
+async function addToFreeAgents(tx: ? BackboardTx, p : Player, phase: Phase, baseMoods: number[]) {
     const dbOrTx = tx !== undefined && tx !== null ? tx : g.dbl;
     phase = phase !== null ? phase : g.phase;
 
@@ -619,7 +716,7 @@ async function addToFreeAgents(tx: ?BackboardTx, p: Player, phase: Phase, baseMo
     p.tid = g.PLAYER.FREE_AGENT;
 
     p.ptModifier = 1; // Reset
-    p.trnModifier = 0;
+    p.trnModifier = 0; // default olarak balanced olmasi icin(balance = 0)
 
     // The put doesn't always work in Chrome. No idea why.
     await dbOrTx.players.put(p);
@@ -672,8 +769,8 @@ async function release(tx: BackboardTx, p: Player, justDrafted: boolean) {
  * @return {number} Fuzz, between -5 and 5.
  */
 function genFuzz(scoutingRank: number): number {
-    const cutoff = 2 + 8 * (scoutingRank - 1) / (g.numTeams - 1);  // Max error is from 2 to 10, based on scouting rank
-    const sigma = 1 + 2 * (scoutingRank - 1) / (g.numTeams - 1);  // Stddev is from 1 to 3, based on scouting rank
+    const cutoff = 2 + 8 * (scoutingRank - 1) / (g.numTeams - 1); // Max error is from 2 to 10, based on scouting rank
+    const sigma = 1 + 2 * (scoutingRank - 1) / (g.numTeams - 1); // Stddev is from 1 to 3, based on scouting rank
 
     let fuzz = random.gauss(0, sigma);
     if (fuzz > cutoff) {
@@ -716,10 +813,12 @@ function genRatings(
     }
 
     // Each row should sum to ~150
-    const profiles = [[10, 10, 10, 10, 10, 10, 10, 10, 10, 25, 10, 10, 10, 10, 10], // Base
-                [-30, -10, 40, 20, 15, 0, 0, 10, 15, 25, 0, 30, 20, 20, 0], // Point Guard
-                [10, 10, 15, 15, 0, 0, 25, 15, 15, 20, 0, 10, 15, 0, 15], // Wing
-                [45, 30, -15, -15, -5, 30, 30, -5, -15, -25, 30, -5, -20, -20, 30]]; // Big
+    const profiles = [
+        [10, 10, 10, 10, 10, 10, 10, 10, 10, 25, 10, 10, 10, 10, 10], // Base
+        [-30, -10, 40, 20, 15, 0, 0, 10, 15, 25, 0, 30, 20, 20, 0], // Point Guard
+        [10, 10, 15, 15, 0, 0, 25, 15, 15, 20, 0, 10, 15, 0, 15], // Wing
+        [45, 30, -15, -15, -5, 30, 30, -5, -15, -25, 30, -5, -20, -20, 30]
+    ]; // Big
     const sigmas = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
     baseRating = random.gauss(baseRating, 5);
 
@@ -787,7 +886,11 @@ function genRatings(
     return ratings;
 }
 
-function name(): {country: string, firstName: string, lastName: string} {
+function name(): {
+    country: string,
+    firstName: string,
+    lastName: string
+} {
     if (playerNames === undefined) {
         // This makes it wait until g is loaded before calling names.load, so user-defined names will be used if provided
         playerNames = names.load();
@@ -834,7 +937,9 @@ function name(): {country: string, firstName: string, lastName: string} {
  * @param {number} scoutingRank Between 1 and g.numTeams (default 30), the rank of scouting spending, probably over the past 3 years via core.finances.getRankLastThree.
  * @return {Object} Updated player object.
  */
-function addRatingsRow<T: {ratings: PlayerRatings[]}>(
+function addRatingsRow < T: {
+    ratings: PlayerRatings[]
+} > (
     p: T,
     scoutingRank: number,
 ): T {
@@ -859,7 +964,7 @@ function addRatingsRow<T: {ratings: PlayerRatings[]}>(
  * @param {=boolean} playoffs Is this stats row for the playoffs or not? Default false.
  * @return {Object} Updated player object.
  */
-function addStatsRow(tx: ?BackboardTx, p: Player, playoffs?: boolean = false): Player {
+function addStatsRow(tx: ? BackboardTx, p : Player, playoffs ? : boolean = false): Player {
     const dbOrTx = tx !== undefined && tx !== null ? tx : g.dbl;
 
     const statsRow = {
@@ -977,8 +1082,8 @@ function generate(
         ratings = genRatings(profile, baseRating, pot, draftYear, scoutingRank, tid);
     }
 
-    const minHgt = 71;  // 5'11"
-    const maxHgt = 85;  // 7'1"
+    const minHgt = 71; // 5'11"
+    const maxHgt = 85; // 7'1"
     const minWeight = 170;
     const maxWeight = 290;
 
@@ -1015,10 +1120,13 @@ function generate(
         hgt: Math.round(random.randInt(-1, 1) + ratings.hgt * (maxHgt - minHgt) / 100 + minHgt), // Height in inches (from minHgt to maxHgt)
         hof: false,
         imgURL: "", // Custom rosters can define player image URLs to be used rather than vector faces
-        injury: {type: "Healthy", gamesRemaining: 0},
+        injury: {
+            type: "Healthy",
+            gamesRemaining: 0
+        },
         lastName: nameInfo.lastName,
         ptModifier: 1,
-        trnModifier: 0, // default olarak balance olmasi icin (balanced = 0)
+        trnModifier: 0,
         ratings: [ratings],
         retiredYear: null,
         rosterOrder: 666, // Will be set later
@@ -1076,7 +1184,9 @@ function injury(healthRank: number): PlayerInjury {
  */
 function contractSeasonsRemaining(exp: number, numGamesRemaining: number): number {
     let frac = numGamesRemaining / g.numGames;
-    if (frac > 1) { frac = 1; } // This only happens if the user changed g.numGames mid season
+    if (frac > 1) {
+        frac = 1;
+    } // This only happens if the user changed g.numGames mid season
     return (exp - g.season) + frac;
 }
 
@@ -1147,7 +1257,9 @@ function filter(p: PlayerWithStats | PlayerWithStats[], options: any): PlayerFil
                 // Non-dead players wil not have any diedYear property
                 fp.diedYear = p.hasOwnProperty("diedYear") ? p.diedYear : null;
             } else if (options.attrs[i] === "draft") {
-                fp.draft = Object.assign({}, p.draft, {age: p.draft.year - p.born.year});
+                fp.draft = Object.assign({}, p.draft, {
+                    age: p.draft.year - p.born.year
+                });
                 if (options.fuzz) {
                     fp.draft.ovr = fuzzRating(fp.draft.ovr, p.ratings[0].fuzz);
                     fp.draft.pot = fuzzRating(fp.draft.pot, p.ratings[0].fuzz);
@@ -1160,10 +1272,10 @@ function filter(p: PlayerWithStats | PlayerWithStats[], options: any): PlayerFil
             } else if (options.attrs[i] === "hgtIn") {
                 fp.hgtIn = p.hgt - 12 * Math.floor(p.hgt / 12);
             } else if (options.attrs[i] === "contract") {
-                fp.contract = helpers.deepCopy(p.contract);  // [millions of dollars]
-                fp.contract.amount /= 1000;  // [millions of dollars]
+                fp.contract = helpers.deepCopy(p.contract); // [millions of dollars]
+                fp.contract.amount /= 1000; // [millions of dollars]
             } else if (options.attrs[i] === "cashOwed") {
-                fp.cashOwed = contractSeasonsRemaining(p.contract.exp, options.numGamesRemaining) * p.contract.amount / 1000;  // [millions of dollars]
+                fp.cashOwed = contractSeasonsRemaining(p.contract.exp, options.numGamesRemaining) * p.contract.amount / 1000; // [millions of dollars]
             } else if (options.attrs[i] === "abbrev") {
                 fp.abbrev = helpers.getAbbrev(p.tid);
             } else if (options.attrs[i] === "teamRegion") {
@@ -1183,9 +1295,15 @@ function filter(p: PlayerWithStats | PlayerWithStats[], options: any): PlayerFil
                     fp.teamName = "Retired";
                 }
             } else if (options.attrs[i] === "injury" && options.season !== null && options.season < g.season) {
-                fp.injury = {type: "Healthy", gamesRemaining: 0};
+                fp.injury = {
+                    type: "Healthy",
+                    gamesRemaining: 0
+                };
             } else if (options.attrs[i] === "salaries") {
-                fp.salaries = _.map(p.salaries, salary => { salary.amount /= 1000; return salary; });
+                fp.salaries = _.map(p.salaries, salary => {
+                    salary.amount /= 1000;
+                    return salary;
+                });
             } else if (options.attrs[i] === "salariesTotal") {
                 fp.salariesTotal = _.reduce(fp.salaries, (memo, salary) => memo + salary.amount, 0);
             } else if (options.attrs[i] === "awardsGrouped") {
@@ -1518,12 +1636,16 @@ function filter(p: PlayerWithStats | PlayerWithStats[], options: any): PlayerFil
                 } else {
                     fp.careerStats.per = _.reduce(ps.r, (memo, psr) => memo + psr.per * psr.min, 0) / (fp.careerStats.min * fp.careerStats.gp);
                 }
-                if (isNaN(fp.careerStats.per)) { fp.careerStats.per = 0; }
+                if (isNaN(fp.careerStats.per)) {
+                    fp.careerStats.per = 0;
+                }
                 fp.careerStats.ewa = _.reduce(ps.r, (memo, psr) => memo + psr.ewa, 0); // Special case for EWA - sum
                 if (options.playoffs) {
                     fp.careerStatsPlayoffs = filterStatsPartial(p, ps.cp, options.stats);
                     fp.careerStatsPlayoffs.per = _.reduce(ps.p, (memo, psp) => memo + psp.per * psp.min, 0) / (fp.careerStatsPlayoffs.min * fp.careerStatsPlayoffs.gp); // Special case for PER - weight by minutes per season
-                    if (isNaN(fp.careerStatsPlayoffs.per)) { fp.careerStatsPlayoffs.per = 0; }
+                    if (isNaN(fp.careerStatsPlayoffs.per)) {
+                        fp.careerStatsPlayoffs.per = 0;
+                    }
                     fp.careerStatsPlayoffs.ewa = _.reduce(ps.p, (memo, psp) => memo + psp.ewa, 0); // Special case for EWA - sum
                 }
             } else if (options.stats.length > 0) { // Return 0 stats if no entry and a single year was requested, unless no stats were explicitly requested
@@ -1619,9 +1741,9 @@ function madeHof(p: Player, playerStats: PlayerStats[]): boolean {
 }
 
 type ValueOptions = {
-    fuzz?: boolean,
-    noPot?: boolean,
-    withContract?: boolean,
+    fuzz ? : boolean,
+    noPot ? : boolean,
+    withContract ? : boolean,
 };
 
 /**
@@ -1752,11 +1874,11 @@ function value(p: any, ps: PlayerStats[], options: ValueOptions = {}): number {
 
 // ps: player stats objects, regular season only, most recent first
 // Currently it is assumed that ps, if passed, will be the latest season. This assumption could be easily relaxed if necessary, just might make it a bit slower
-async function updateValues<T: Player | PlayerWithoutPid>(
-    tx: ?BackboardTx,
-    p: T,
+async function updateValues < T: Player | PlayerWithoutPid > (
+    tx: ? BackboardTx,
+    p : T,
     ps: PlayerStats[],
-): Promise<T> {
+): Promise < T > {
     const dbOrTx = tx !== undefined && tx !== null ? tx : g.dbl;
 
     // Require up to the two most recent regular season stats entries, unless the current season has 2000+ minutes
@@ -1794,10 +1916,19 @@ async function updateValues<T: Player | PlayerWithoutPid>(
     }
 
     p.value = value(p, ps);
-    p.valueNoPot = value(p, ps, {noPot: true});
-    p.valueFuzz = value(p, ps, {fuzz: true});
-    p.valueNoPotFuzz = value(p, ps, {noPot: true, fuzz: true});
-    p.valueWithContract = value(p, ps, {withContract: true});
+    p.valueNoPot = value(p, ps, {
+        noPot: true
+    });
+    p.valueFuzz = value(p, ps, {
+        fuzz: true
+    });
+    p.valueNoPotFuzz = value(p, ps, {
+        noPot: true,
+        fuzz: true
+    });
+    p.valueWithContract = value(p, ps, {
+        withContract: true
+    });
 
     return p;
 }
@@ -1812,7 +1943,7 @@ async function updateValues<T: Player | PlayerWithoutPid>(
  * @param {Object} p Player object.
  * @return {Object} p Updated (retired) player object.
  */
-function retire(tx: BackboardTx, p: Player, playerStats: PlayerStats[], retiredNotification?: boolean = true) {
+function retire(tx: BackboardTx, p: Player, playerStats: PlayerStats[], retiredNotification ? : boolean = true) {
     if (retiredNotification) {
         logEvent(tx, {
             type: "retired",
@@ -1829,7 +1960,10 @@ function retire(tx: BackboardTx, p: Player, playerStats: PlayerStats[], retiredN
     // Add to Hall of Fame?
     if (madeHof(p, playerStats)) {
         p.hof = true;
-        p.awards.push({season: g.season, type: "Inducted into the Hall of Fame"});
+        p.awards.push({
+            season: g.season,
+            type: "Inducted into the Hall of Fame"
+        });
         logEvent(tx, {
             type: "hallOfFame",
             text: `<a href="${helpers.leagueUrl(["player", p.pid])}">${p.firstName} ${p.lastName}</a> was inducted into the <a href="${helpers.leagueUrl(["hall_of_fame"])}">Hall of Fame</a>.`,
@@ -1892,7 +2026,7 @@ function augmentPartialPlayer(p: any, scoutingRank: number): PlayerWithStats {
     const pg = generate(p.tid, age, "", 0, 0, g.startingSeason - age, true, scoutingRank);
 
     // Optional things
-    const simpleDefaults = ["awards", "born", "college", "contract", "draft", "face", "freeAgentMood", "gamesUntilTradable", "hgt", "hof", "imgURL", "injury", "ptModifier","trnModifier", "retiredYear", "rosterOrder", "watch", "weight", "yearsFreeAgent"];
+    const simpleDefaults = ["awards", "born", "college", "contract", "draft", "face", "freeAgentMood", "gamesUntilTradable", "hgt", "hof", "imgURL", "injury", "ptModifier", "trnModifier", "retiredYear", "rosterOrder", "watch", "weight", "yearsFreeAgent"];
     for (let i = 0; i < simpleDefaults.length; i++) {
         if (!p.hasOwnProperty(simpleDefaults[i])) {
             p[simpleDefaults[i]] = pg[simpleDefaults[i]];
@@ -2004,11 +2138,21 @@ function checkStatisticalFeat(tx: BackboardTx, pid: number, tid: number, p: Game
         saveFeat = true;
     }
     if (doubles >= 3) {
-        if (p.stat.pts >= TEN) { statArr.points = p.stat.pts; }
-        if (p.stat.orb + p.stat.drb >= TEN) { statArr.rebounds = p.stat.orb + p.stat.drb; }
-        if (p.stat.ast >= TEN) { statArr.assists = p.stat.ast; }
-        if (p.stat.stl >= TEN) { statArr.steals = p.stat.stl; }
-        if (p.stat.blk >= TEN) { statArr.blocks = p.stat.blk; }
+        if (p.stat.pts >= TEN) {
+            statArr.points = p.stat.pts;
+        }
+        if (p.stat.orb + p.stat.drb >= TEN) {
+            statArr.rebounds = p.stat.orb + p.stat.drb;
+        }
+        if (p.stat.ast >= TEN) {
+            statArr.assists = p.stat.ast;
+        }
+        if (p.stat.stl >= TEN) {
+            statArr.steals = p.stat.stl;
+        }
+        if (p.stat.blk >= TEN) {
+            statArr.blocks = p.stat.blk;
+        }
         saveFeat = true;
     }
     if (p.stat.pts >= FIFTY) {
@@ -2134,19 +2278,21 @@ async function killOne() {
 }
 
 type WithStatsOptions = {
-    statsPlayoffs?: boolean,
+    statsPlayoffs ? : boolean,
     statsSeasons: 'all' | number[],
-    statsTid?: number,
+    statsTid ? : number,
 };
 async function withStats(
     tx: BackboardTx,
-    players: (Player & {stats?: PlayerStats[]})[], // This mutates the input, so input must have optional stats property
+    players: (Player & {
+        stats ? : PlayerStats[]
+    })[], // This mutates the input, so input must have optional stats property
     {
         statsPlayoffs = false,
         statsSeasons,
         statsTid,
     }: WithStatsOptions,
-): Promise<PlayerWithStats[]> {
+): Promise < PlayerWithStats[] > {
     players = await Promise.all(players);
     players = players.sort((a, b) => a.pid - b.pid);
 
