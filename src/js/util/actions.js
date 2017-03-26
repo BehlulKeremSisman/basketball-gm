@@ -196,7 +196,11 @@ const playMenu = {
     },
 
     untilPreseason: async () => {
-        await playAmount('untilPreseason');
+      // Show warning dialog only if there are players remaining un-re-signed
+        alert(`Go to Team -> Roster link. Choose training focus for each player for preseason training camp.`); // Alert for choose the players' training focus
+        if(window.confirm('Are you sure your players training focuses are ready ? ')){
+          await playAmount('untilPreseason');
+        }
     },
 
     untilRegularSeason: async () => {
