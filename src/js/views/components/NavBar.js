@@ -40,7 +40,7 @@ class TopMenuToggle extends React.Component {
     props: TopMenuToggleProps;
     handleClick: Function;
     handleMouseEnter: Function;
-
+ 
     constructor(props: TopMenuToggleProps, context) {
         super(props, context);
         this.handleClick = this.handleClick.bind(this);
@@ -198,7 +198,7 @@ type DropdownLinksState = {
 class DropdownLinks extends React.Component {
     state: DropdownLinksState;
     handleTopMenuToggle: Function;
-
+    
     constructor(props) {
         super(props);
         this.state = {
@@ -226,11 +226,12 @@ class DropdownLinks extends React.Component {
                 <span className="visible-xs toggle-responsive-menu"><span className="glyphicon glyphicon-home" style={{marginRight: '5px'}} />League Dashboard</span>
             </NavItem> : null}
         
-             <select id="TeamStrategy">
-             <option value="1">Attacker</option>
-             <option value="2">Balanced</option>
-             <option value="3">Defender</option>
+             <select id="myTeamStrategy">
+             	<option value="1">Attacker</option>
+             	<option value="2">Balanced</option>
+             	<option value="3">Defender</option>
              </select>
+
               
             {lid !== undefined ? <TopMenuDropdown long="League" short="L" openId={this.state.openId} onToggle={this.handleTopMenuToggle}>
                 <MenuItem href={helpers.leagueUrl(['standings'])}>Standings</MenuItem>
