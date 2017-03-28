@@ -34,15 +34,21 @@ async function updatePlayers(inputs, updateEvents, state) {
             players = players.filter(p => p.watch && typeof p.watch !== "function");
         }
 
+        const attrs = ["pid", "name", "abbrev", "age", "born", "injury", "watch", "hof"];  // tid and draft are used for checking if a player can be released without paying his salary
+        const ratings = ["ovr", "pot", "hgt", "stre", "spd", "jmp", "endu", "ins", "dnk", "ft", "fg", "tp", "blk", "stl", "drb", "pss", "reb", "dovr", "dpot", "dhgt", "dstre", "dspd", "djmp", "dendu", "dins", "ddnk", "dft", "dfg", "dtp", "dblk", "dstl", "ddrb", "dpss", "dreb", "skills", "pos"];
+        const stats = ["abbrev", "tid"];
+
         players = player.filter(players, {
-            attrs: ["pid", "name", "abbrev", "age", "born", "injury", "watch", "hof"],
-            ratings: ["ovr", "pot", "hgt", "stre", "spd", "jmp", "endu", "ins", "dnk", "ft", "fg", "tp", "blk", "stl", "drb", "pss", "reb", "skills", "pos"],
-            stats: ["abbrev", "tid"],
+            attrs,
+            ratings,
+            stats,
             season: inputs.season,
-            showNoStats: true, // If this is true, it makes the "tid" entry do nothing
+            tid: inputs.tid,
+            showNoStats: true,
             showRookies: true,
             fuzz: true,
         });
+
 
         // player.filter TID option doesn't work well enough (factoring in showNoStats and showRookies), so let's do it manually
         // For the current season, use the current abbrev (including FA), not the last stats abbrev
@@ -73,4 +79,3 @@ export default bbgmViewReact.init({
     runBefore: [updatePlayers],
     Component: PlayerRatings,
 });
-

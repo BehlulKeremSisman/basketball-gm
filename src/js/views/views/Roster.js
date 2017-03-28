@@ -481,13 +481,13 @@ class Roster extends React.Component {
                             </HelpPopover></th> : null}
 
                             {editable ? <th title="Training Focus">TRN <HelpPopover placement="left" title="Training">
-                                <p>Your coach will divide up training focus based on ability, stamina or what player need to focus . If you want to influence his judgement, your options are:</p>
+                                <p>Your coach will divide up training camp focus based on ability, stamina or what player need to focus. If you want to influence his judgement, your options are:</p>
                                 <p>
-                                    <span style={trnStyles['0']}>Shooting(Free throw, 2 or 3 points shots)</span><br />
-                                    <span style={trnStyles['1']}>Passing(Playmaking and fast break pass)</span><br />
-                                    <span style={trnStyles['2']}>Balanced(Mixed training)</span><br />
-                                    <span style={trnStyles['3']}>Defending(Defending, positions)</span><br />
-                                    <span style={trnStyles['4']}>Fitness(Focusing physical training)</span>
+                                    <span style={trnStyles['0']}>Balanced(Focus: Little but all skills)</span><br />
+                                    <span style={trnStyles['1']}>Passing(Focus: Pss)</span><br />
+                                    <span style={trnStyles['2']}>Shooting(Focus: Ins,Dnk,Ft,2Pt,3Pt)</span><br />
+                                    <span style={trnStyles['3']}>Defending(Focus: Blk,Stl,Reb)</span><br />
+                                    <span style={trnStyles['4']}>Fitness(Focus: Str,Spd,Jmp,End,Drb)</span>
                                 </p>
                             </HelpPopover></th> : null}
 

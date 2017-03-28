@@ -113,7 +113,7 @@ const playAmount = async (amount: 'day' | 'week' | 'month' | 'untilPreseason') =
         }
         freeAgents.play(numDays);
     }
-};  
+};
 
 const playStop = async () => {
     await league.setGameAttributesComplete({stopGames: true});
@@ -197,7 +197,7 @@ const playMenu = {
 
     untilPreseason: async () => {
       // Show warning dialog only if there are players remaining un-re-signed
-        alert(`Go to Team -> Roster link. Choose training focus for each player for preseason training camp.`); // Alert for choose the players' training focus
+        alert(`We are in TRAINING CAMP now. Go to Team -> Roster link. Choose training focus for each player for training camp.`); // Alert for choose the players' training focus
         if(window.confirm('Are you sure your players training focuses are ready ? ')){
           await playAmount('untilPreseason');
         }
@@ -251,7 +251,7 @@ const toolsMenu = {
         }
     },
 };
- 
+
 export {
     liveGame,
     negotiate,

@@ -434,24 +434,24 @@ function develop < T: {
         }
         /* trnModifier == 0 -> Balanced
            trnModifier == 1 -> Pass(pss)
-           trnModifier == 2 -> Shoot(ins,ft,fg,tp)
-           trnModifier == 3 -> Defence(stl, blk)
-           trnModifier == 4 -> Fitness(spd,jmp,endu)
+           trnModifier == 2 -> Shoot(ins,ft,fg,tp,dnk)
+           trnModifier == 3 -> Defence(stl, blk, reb)
+           trnModifier == 4 -> Fitness(spd,jmp,endu,stre,drb)
         */
         // Ratings that can only increase a little, and only when young. Decrease when old.
-        let ratingKeys = ["spd", "jmp", "endu"];
+        let ratingKeys = ["spd", "jmp", "endu", "stre", "drb"];
         for (let j = 0; j < ratingKeys.length; j++) {
             let baseChangeLocalFitness;
             if (age <= 24) {
-                baseChangeLocalFitness = baseChange;  // Balanced oldugu durum
+                baseChangeLocalFitness = baseChange + 2;  // Balanced oldugu durum
                 if (p.trnModifier == 4) {
-                    baseChangeLocalFitness = baseChangeLocalFitness + 20;
+                    baseChangeLocalFitness = baseChangeLocalFitness + 16;
                 }
                 if (p.trnModifier == 1 || p.trnModifier == 2 || p.trnModifier == 3) {
                     baseChangeLocalFitness = baseChange - 2;
                 }
             } else if (age <= 30) {
-                baseChangeLocalFitness = baseChange - 1;  // Balanced oldugu durum
+                baseChangeLocalFitness = baseChange + 0.5;  // Balanced oldugu durum
                 if (p.trnModifier == 4) {
                     baseChangeLocalFitness = baseChangeLocalFitness + 9;
                 }
@@ -460,96 +460,96 @@ function develop < T: {
                 }
             } else {
                 baseChangeLocalFitness = baseChange - 2.5; // balanced ve fitness oldugu durum
+                if (p.trnModifier == 4) {
+                    baseChangeLocalFitness = baseChangeLocalFitness + 6;
+                }
                 if (p.trnModifier == 1 || p.trnModifier == 2 || p.trnModifier == 3) {
-                    baseChangeLocalFitness = baseChange - 2;
+                    baseChangeLocalFitness = baseChange - 4;
                 }
             }
 
-            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocalFitness * random.uniform(0.5, 1.5));
+            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocalFitness * random.uniform(0.6, 1.4));
         }
 
         // Ratings that can only increase a little, and only when young. Decrease slowly when old.
-        ratingKeys = ["drb", "pss", "reb"];
+        ratingKeys = ["pss"];
         for (let j = 0; j < ratingKeys.length; j++) {
             let baseChangeLocalPass;
             if (age <= 24) {
-                baseChangeLocalPass = baseChange;  // Balanced oldugu durum
-                if (p.trnModifier == 1 && j == 1) {
-                    baseChangeLocalPass = baseChangeLocalPass + 20;
-                }
-                if (p.trnModifier == 1 && (j == 0 || j == 2)) {
-                    baseChangeLocalPass = baseChange - 2;
+                baseChangeLocalPass = baseChange + 2;  // Balanced oldugu durum
+                if (p.trnModifier == 1) {
+                    baseChangeLocalPass = baseChangeLocalPass + 16;
                 }
                 if (p.trnModifier == 2 || p.trnModifier == 3 || p.trnModifier == 4) {
                     baseChangeLocalPass = baseChange - 2;
                 }
             } else if (age <= 30) {
-                baseChangeLocalPass = baseChange - 1;  // Balanced oldugu durum
-                if (p.trnModifier == 1 && j == 1) {
+                baseChangeLocalPass = baseChange + 0.5;  // Balanced oldugu durum
+                if (p.trnModifier == 1) {
                     baseChangeLocalPass = baseChangeLocalPass + 9;
-                }
-                if (p.trnModifier == 1 && (j == 0 || j == 2)) {
-                    baseChangeLocalPass = baseChange - 2;
                 }
                 if (p.trnModifier == 2 || p.trnModifier == 3 || p.trnModifier == 4) {
                     baseChangeLocalPass = baseChange - 2;
                 }
             } else {
                 baseChangeLocalPass = baseChange - 2.5;  // Balanced ve pass oldugu durum
+                if (p.trnModifier == 1) {
+                    baseChangeLocalPass = baseChangeLocalPass + 6;
+                }
                 if (p.trnModifier == 2 || p.trnModifier == 3 || p.trnModifier == 4) {
-                    baseChangeLocalPass = baseChange - 2;
+                    baseChangeLocalPass = baseChange - 4;
                 }
             }
 
-            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocalPass * random.uniform(0.5, 1.5));
+            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocalPass * random.uniform(0.6, 1.4));
         }
 
         // Ratings that can increase a lot, but only when young. Decrease when old.
-        ratingKeys = ["stre", "dnk", "blk", "stl"];
+        ratingKeys = ["reb", "blk", "stl"];
         for (let j = 0; j < ratingKeys.length; j++) {
             let baseChangeLocalDefence;
             if (age <= 24) {
-                baseChangeLocalDefence = baseChange;  // Balanced oldugu durum
-                if (p.trnModifier == 3 && (j == 2 || j == 3)) {
-                    baseChangeLocalDefence = baseChangeLocalDefence + 20;
-                }
-                if (p.trnModifier == 3 && (j == 0 || j == 1)) {
-                    baseChangeLocalDefence = baseChange - 2;
+                baseChangeLocalDefence = baseChange + 2;  // Balanced oldugu durum
+                if (p.trnModifier == 3) {
+                    baseChangeLocalDefence = baseChangeLocalDefence + 16;
                 }
                 if (p.trnModifier == 1 || p.trnModifier == 2 || p.trnModifier == 4) {
                     baseChangeLocalDefence = baseChange - 2;
                 }
             } else if (age <= 30) {
-                baseChangeLocalDefence = baseChange - 1;  // Balanced oldugu durum
-                if (p.trnModifier == 3 && (j == 2 || j == 3)) {
+                baseChangeLocalDefence = baseChange + 0.5;  // Balanced oldugu durum
+                if (p.trnModifier == 3) {
                     baseChangeLocalDefence = baseChangeLocalDefence + 9;
                 }
-                if (p.trnModifier == 3 && (j == 0 || j == 1)) {
+                if (p.trnModifier == 1 || p.trnModifier == 2 || p.trnModifier == 4) {
                     baseChangeLocalDefence = baseChange - 2;
                 }
             } else {
                 baseChangeLocalDefence = baseChange - 2.5;  // Balanced defence oldugu durum
-                if (p.trnModifier == 3 && (j == 0 || j == 1)) {
-                    baseChangeLocalDefence = baseChange - 2;
+                if (p.trnModifier == 3) {
+                    baseChangeLocalDefence = baseChangeLocalDefence + 6;
+                }
+                if (p.trnModifier == 1 || p.trnModifier == 2 || p.trnModifier == 4) {
+                    baseChangeLocalDefence = baseChange - 4;
                 }
             }
-            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocalDefence * random.uniform(0.5, 1.5));
+            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocalDefence * random.uniform(0.6, 1.4));
         }
 
         // Ratings that increase most when young, but can continue increasing for a while and only decrease very slowly.
-        ratingKeys = ["ins", "ft", "fg", "tp"];
+        ratingKeys = ["ins", "ft", "fg", "tp","dnk"];
         for (let j = 0; j < ratingKeys.length; j++) {
             let baseChangeLocalShoot;
             if (age <= 24) {
-                baseChangeLocalShoot = baseChange;  // Balanced oldugu durum
+                baseChangeLocalShoot = baseChange + 2;  // Balanced oldugu durum
                 if (p.trnModifier == 2) {
-                    baseChangeLocalShoot = baseChangeLocalShoot + 20;
+                    baseChangeLocalShoot = baseChangeLocalShoot + 16;
                 }
                 if (p.trnModifier == 1 || p.trnModifier == 3 || p.trnModifier == 4) {
                     baseChangeLocalShoot = baseChange - 2;
                 }
             } else if (age <= 30) {
-                baseChangeLocalShoot = baseChange - 1;  // Balanced oldugu durum
+                baseChangeLocalShoot = baseChange + 0.5;  // Balanced oldugu durum
                 if (p.trnModifier == 2) {
                     baseChangeLocalShoot = baseChangeLocalShoot + 9;
                 }
@@ -558,12 +558,15 @@ function develop < T: {
                 }
             } else {
                 baseChangeLocalShoot = baseChange - 2.5;  // Balanced ve shoot oldugu durum
+                if (p.trnModifier == 2) {
+                    baseChangeLocalShoot = baseChangeLocalShoot + 6;
+                }
                 if (p.trnModifier == 1 || p.trnModifier == 3 || p.trnModifier == 4) {
-                    baseChangeLocalShoot = baseChange - 2;
+                    baseChangeLocalShoot = baseChange - 4;
                 }
             }
 
-            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocalShoot * random.uniform(0.5, 1.5));
+            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocalShoot * random.uniform(0.6, 1.4));
         }
 
         // Update overall and potential
@@ -1362,7 +1365,7 @@ function filter(p: PlayerWithStats | PlayerWithStats[], options: any): PlayerFil
                 fp.ratings = {};
                 for (let k = 0; k < options.ratings.length; k++) {
                     fp.ratings[options.ratings[k]] = pr[options.ratings[k]];
-                    if (options.ratings[k] === "dovr" || options.ratings[k] === "dpot") {
+                    if (options.ratings[k] === "dovr" || options.ratings[k] === "dpot"|| options.ratings[k] === "dhgt"|| options.ratings[k] === "dstre"|| options.ratings[k] === "dspd"|| options.ratings[k] === "djmp"|| options.ratings[k] === "dendu" || options.ratings[k] === "dins" || options.ratings[k] === "ddnk" || options.ratings[k] === "dft"|| options.ratings[k] === "dfg"|| options.ratings[k] === "dtp"|| options.ratings[k] === "dblk"|| options.ratings[k] === "dstl"|| options.ratings[k] === "ddrb" || options.ratings[k] === "dpss"|| options.ratings[k] === "dreb") {
                         // Handle dovr and dpot - if there are previous ratings, calculate the fuzzed difference
                         const cat = options.ratings[k].slice(1); // either ovr or pot
                         if (j > 0) {
