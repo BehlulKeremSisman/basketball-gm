@@ -225,14 +225,13 @@ class DropdownLinks extends React.Component {
                 <span className="hidden-xs"><span className="glyphicon glyphicon-home" /></span>
                 <span className="visible-xs toggle-responsive-menu"><span className="glyphicon glyphicon-home" style={{marginRight: '5px'}} />League Dashboard</span>
             </NavItem> : null}
-        
+             
              <select id="myTeamStrategy">
              	<option value="1">Attacker</option>
              	<option value="2">Balanced</option>
              	<option value="3">Defender</option>
-             </select>
-
-              
+             </select>  
+          
             {lid !== undefined ? <TopMenuDropdown long="League" short="L" openId={this.state.openId} onToggle={this.handleTopMenuToggle}>
                 <MenuItem href={helpers.leagueUrl(['standings'])}>Standings</MenuItem>
                 <MenuItem href={helpers.leagueUrl(['playoffs'])}>Playoffs</MenuItem>

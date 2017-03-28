@@ -9,7 +9,7 @@ class PlayerRow extends React.Component {
     shouldComponentUpdate(nextProps) {
         return this.prevInGame || nextProps.p.inGame;
     }
-
+              
     render() {
         const {i, p} = this.props;
 
@@ -269,14 +269,15 @@ class LiveGame extends React.Component {
 
     handleSpeedChange(e) {
         this.setState({speed: e.target.value});
-    }
-
+    }          
     render() {
         bbgmViewReact.title('Live Game Simulation');
+        var mychoice = document.getElementById('myTeamStrategy');
+        var selectedStrategyText = mychoice.options[mychoice.selectedIndex].text;
 
         return <div>
             <h1>Live Game Simulation</h1>
-
+               <p>"Your Team Strategy is"{selectedStrategyText}</p>
             <p className="text-danger">If you navigate away from this page, you won't be able to see these play-by-play results again because they are not stored anywhere. The results of this game are already final, though.</p>
 
             <div className="row">
@@ -304,6 +305,7 @@ class LiveGame extends React.Component {
         </div>;
     }
 }
+
 
 LiveGame.propTypes = {
     events: React.PropTypes.arrayOf(React.PropTypes.shape({

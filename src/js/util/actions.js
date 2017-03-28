@@ -113,7 +113,7 @@ const playAmount = async (amount: 'day' | 'week' | 'month' | 'untilPreseason') =
         }
         freeAgents.play(numDays);
     }
-};
+};  
 
 const playStop = async () => {
     await league.setGameAttributesComplete({stopGames: true});
@@ -251,7 +251,7 @@ const toolsMenu = {
         }
     },
 };
-
+ 
 export {
     liveGame,
     negotiate,
