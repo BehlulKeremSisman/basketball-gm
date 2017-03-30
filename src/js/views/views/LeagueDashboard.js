@@ -20,7 +20,8 @@ const LeagueDashboard = ({abbrev, ast, astRank, att, cash, completed, confTeams,
 
     return <div>
         <h1>{region} {name} Dashboard <NewWindowLink /></h1>
-          <p>Read Message to learn information about team strategies </p>                  
+          <p>Read Message to learn information about team strategies </p> 
+          <b>You can select your strategy from NavBar</b>
         <div className="row">
             <div className="col-md-8">
                 <div className="row">

@@ -8,8 +8,8 @@ import type {BackboardTx, OwnerMoodDeltas} from './types';
 
 // First message after new game
 const first = [
-    "<p>Hey, sorry I didn't recognize you in the lobby this morning. I'm sure I'll get to know you eventually. Maybe after I get back from my trip to Tahiti?</p><p>Well, listen. Times are rough. Profit only increased by 10% last year. I know, I know, horrible. And I had to let half of our junior staffers go just to get that 10%!</p><p>So I'll cut right to the chase. I need money. And championships. Money and championships, that's what I'm interested in.</p>                             <p>You can manage your team and select proper teamstrategy for your team. If you choose attacker, your team can make more basket but your opponent also can make more basket. Be careful at this point.                                                                                                                                    If you choose defender, your team make less basket and your opponent also can less basket. Blok and rebound statistics increase according to attacker strategy.       At balance, your team performs poisedly. Make up your mind which strategy is best for you.</p> <p>Get it done.</p>                                            <p>Goodluck!</p>"
-];
+    "<p>You can manage your team and select proper teamstrategy for your team. If you choose attacker, your team can make more basket but your opponent also can make more basket. Be careful at this point. If you choose defender, your team make less basket and your opponent also can less basket. Blok and rebound statistics increase according to attacker strategy. At balance, your team performs poisedly. Make up your mind which strategy is best for you.</p> <p>Get it done.<p>            <p>Goodluck!</p>"                           
+]; 
 
 // Random activities the owner claims to be doing
 const activities = [

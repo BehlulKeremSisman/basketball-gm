@@ -277,7 +277,7 @@ class LiveGame extends React.Component {
 
         return <div>
             <h1>Live Game Simulation</h1>
-               <p>Your Team Strategy is{selectedStrategyText}</p>
+               <p>Your Team Strategy is{selectedStrategyText} now</p>
             <p className="text-danger">If you navigate away from this page, you won't be able to see these play-by-play results again because they are not stored anywhere. The results of this game are already final, though.</p>
 
             <div className="row">
