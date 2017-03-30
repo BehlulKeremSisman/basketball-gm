@@ -62,6 +62,40 @@ function ovr(ratings: PlayerRatings): number {
     return Math.round((4 * ratings.hgt + ratings.stre + 4 * ratings.spd + 2 * ratings.jmp + 3 * ratings.endu + 3 * ratings.ins + 4 * ratings.dnk + ratings.ft + ratings.fg + 2 * ratings.tp + ratings.blk + ratings.stl + ratings.drb + 3 * ratings.pss + ratings.reb) / 32);
 }
 
+function winRatio(player1: Player | PlayerWithoutPid, player2: Player | PlayerWithoutPid): number {
+    //returns win ratio
+    let ovr1 = ovr(player1.ratings[0]); //ratings array olarak tanımlı oldugundan ratings[0] ?
+    let ovr2 = ovr(player2.ratings[0]);
+    let diff = ovr1 - ovr2;
+
+    if(diff < -30)
+        return 0;
+    else if(diff < -20)
+        return 0.1;
+    else if(diff < -15)
+        return 0.2;
+    else if(diff < -10)
+        return 0.3;
+    else if(diff < -5)
+        return 0.4;
+    else if(diff <= -1)
+        return 0.45;
+    else if(diff == 0)
+        return 0.5;
+    else if(diff < 5)
+        return 0.55;
+    else if(diff < 10)
+        return 0.6;
+    else if(diff < 15)
+        return 0.7;
+    else if(diff < 20)
+        return 0.8;
+    else if(diff < 30)
+        return 0.9;
+    else
+        return 1;
+}
+
 function fuzzRating(rating: number, fuzz: number): number {
     // Turn off fuzz in multi team mode, because it doesn't have any meaning there in its current form
     if (g.userTids.length > 1 || g.godMode) {
@@ -2420,4 +2454,5 @@ export {
     checkStatisticalFeat,
     killOne,
     withStats,
+    winRatio,
 };

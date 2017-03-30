@@ -12,10 +12,6 @@ import * as phase from '../core/phase';
 import * as season from '../core/season';
 import * as trade from '../core/trade';
 import * as helpers from './helpers';
-import logEvent from './logEvent';
-import * as player from '../core/player';
-import * as team from '../core/team';
-import Promise from 'bluebird';
 
 const liveGame = async (gid: number) => {
     ui.realtimeUpdate([], helpers.leagueUrl(["live_game"]), () => {
