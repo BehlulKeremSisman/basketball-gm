@@ -680,7 +680,7 @@ class GameSim {
 
         // Is this an "assisted" attempt (i.e. an assist will be recorded if it's made)
         let passer;
-        if (this.probAst() > Math.random()) {
+        if (this.probAst() > Math.random()*0.5) {
             const ratios = this.ratingArray("passing", this.o, 2);
             passer = pickPlayer(ratios, shooter);
         }
@@ -728,7 +728,7 @@ class GameSim {
             probMake += 0.025;
         }
 
-        if (this.probBlk() > Math.random()) {
+        if (this.probBlk() > Math.random()*1.4) {
             return this.doBlk(shooter, type); // orb or drb
         }
 
@@ -742,100 +742,7 @@ class GameSim {
         }
 
         // Miss, but fouled
-        if (probMissAndFoul > Math.random()*0.5) {   //bak
-            if (type === "threePointer") {
-                return this.doFt(shooter, 3); // fg, orb, or drb
-            }
-            return this.doFt(shooter, 2); // fg, orb, or drb
-        }
-
-        // Miss
-        this.recordStat(this.o, p, "fga");
-        if (type === "atRim") {
-            this.recordStat(this.o, p, "fgaAtRim");
-            this.recordPlay("missAtRim", this.o, [this.team[this.o].player[p].name]);
-        } else if (type === "lowPost") {
-            this.recordStat(this.o, p, "fgaLowPost");
-            this.recordPlay("missLowPost", this.o, [this.team[this.o].player[p].name]);
-        } else if (type === "midRange") {
-            this.recordStat(this.o, p, "fgaMidRange");
-            this.recordPlay("missMidRange", this.o, [this.team[this.o].player[p].name]);
-        } else if (type === "threePointer") {
-            this.recordStat(this.o, p, "tpa");
-            this.recordPlay("missTp", this.o, [this.team[this.o].player[p].name]);
-        }
-        return this.doReb(); // orb or drb
-    }
-        if(mychoice.options[mychoice.selectedIndex].text=='Balanced'){
-          const p = this.playersOnCourt[this.o][shooter];
-
-        const currentFatigue = fatigue(this.team[this.o].player[p].stat.energy);
-
-        // Is this an "assisted" attempt (i.e. an assist will be recorded if it's made)
-        let passer;
-        if (this.probAst() > Math.random()) {
-            const ratios = this.ratingArray("passing", this.o, 2);
-            passer = pickPlayer(ratios, shooter);
-        }
-        //defansif oynatırken math.random(ifin içinde) oranını azalt ofansif için tam tersi
-        // Pick the type of shot and store the success rate (with no defense) in probMake and the probability of an and one in probAndOne
-        let probAndOne;
-        let probMake;
-        let probMissAndFoul;
-        let type;
-        if (this.team[this.o].player[p].compositeRating.shootingThreePointer > 0.5 && Math.random() < (0.35 * this.team[this.o].player[p].compositeRating.shootingThreePointer)) {
-            // Three pointer
-            type = "threePointer";
-            probMissAndFoul = 0.02;
-            probMake = this.team[this.o].player[p].compositeRating.shootingThreePointer * 0.35 + 0.24; //balanced
-            probAndOne = 0.01;
-        } else {
-            const r1 = Math.random() * this.team[this.o].player[p].compositeRating.shootingMidRange;
-            const r2 = Math.random() * (this.team[this.o].player[p].compositeRating.shootingAtRim + this.synergyFactor * (this.team[this.o].synergy.off - this.team[this.d].synergy.def)); // Synergy makes easy shots either more likely or less likely
-            const r3 = Math.random() * (this.team[this.o].player[p].compositeRating.shootingLowPost + this.synergyFactor * (this.team[this.o].synergy.off - this.team[this.d].synergy.def)); // Synergy makes easy shots either more likely or less likely
-            if (r1 > r2 && r1 > r3) {
-                // Two point jumper
-                type = "midRange";
-                probMissAndFoul = 0.07;
-                probMake = this.team[this.o].player[p].compositeRating.shootingMidRange * 0.3 + 0.29; //balanced
-                probAndOne = 0.05;
-            } else if (r2 > r3) {
-                // Dunk, fast break or half court
-                type = "atRim";
-                probMissAndFoul = 0.37;
-                probMake = this.team[this.o].player[p].compositeRating.shootingMidRange * 0.3 + 0.29; //balanced
-                probAndOne = 0.25;
-            } else {
-                // Post up
-                type = "lowPost";
-                probMissAndFoul = 0.33;
-                probMake = this.team[this.o].player[p].compositeRating.shootingMidRange * 0.3 + 0.29; //balanced
-                probAndOne = 0.15;
-            }
-        }
-
-        probMake = (probMake - 0.25 * this.team[this.d].compositeRating.defense + this.synergyFactor * (this.team[this.o].synergy.off - this.team[this.d].synergy.def)) * currentFatigue;
-
-        // Assisted shots are easier
-        if (passer !== undefined) {
-            probMake += 0.025;
-        }
-
-        if (this.probBlk() > Math.random()) {
-            return this.doBlk(shooter, type); // orb or drb
-        }
-
-        // Make
-        if (probMake > Math.random()) {
-            // And 1
-            if (probAndOne > Math.random()) {
-                return this.doFg(shooter, passer, type, true); // fg, orb, or drb
-            }
-            return this.doFg(shooter, passer, type); // fg
-        }
-
-        // Miss, but fouled
-        if (probMissAndFoul > Math.random()) {
+        if (probMissAndFoul > Math.random()*0.4) {   //bak
             if (type === "threePointer") {
                 return this.doFt(shooter, 3); // fg, orb, or drb
             }
@@ -960,7 +867,7 @@ class GameSim {
 
         // Is this an "assisted" attempt (i.e. an assist will be recorded if it's made)
         let passer;
-        if (this.probAst() > Math.random()) {
+        if (this.probAst() > Math.random()*1.3) {
             const ratios = this.ratingArray("passing", this.o, 2);
             passer = pickPlayer(ratios, shooter);
         }
@@ -1008,14 +915,14 @@ class GameSim {
             probMake += 0.025;
         }
 
-        if (this.probBlk() > Math.random()*0.25) {
+        if (this.probBlk() > Math.random()*0.20) {
             return this.doBlk(shooter, type); // orb or drb
         }
 
         // Make
         if (probMake > Math.random()) {
             // And 1
-            if (probAndOne > Math.random()*3) {
+            if (probAndOne > Math.random()*2) {
                 return this.doFg(shooter, passer, type, true); // fg, orb, or drb
             }
             return this.doFg(shooter, passer, type); // fg
