@@ -654,7 +654,7 @@ class GameSim {
 
         return "stl";
     }
-    
+   
     //shoot kısmı 
     /**
      * Shot.
@@ -891,19 +891,19 @@ class GameSim {
                 // Two point jumper
                 type = "midRange";
                 probMissAndFoul = 0.07;
-                probMake = this.team[this.o].player[p].compositeRating.shootingMidRange * 0.28 + 0.28; //defending
+                probMake = this.team[this.o].player[p].compositeRating.shootingMidRange * 0.29 + 0.28; //defending
                 probAndOne = 0.05;
             } else if (r2 > r3) {
                 // Dunk, fast break or half court
                 type = "atRim";
                 probMissAndFoul = 0.37;
-                probMake = this.team[this.o].player[p].compositeRating.shootingMidRange * 0.26 + 0.27; //defending
+                probMake = this.team[this.o].player[p].compositeRating.shootingMidRange * 0.29 + 0.27; //defending
                 probAndOne = 0.25;
             } else {
                 // Post up
                 type = "lowPost";
                 probMissAndFoul = 0.33;
-                probMake = this.team[this.o].player[p].compositeRating.shootingMidRange * 0.25 + 0.28; //defending
+                probMake = this.team[this.o].player[p].compositeRating.shootingMidRange * 0.28 + 0.28; //defending
                 probAndOne = 0.15;
             }
         }
