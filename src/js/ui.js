@@ -89,33 +89,33 @@ async function updatePlayMenu(tx?: BackboardTx) {
     let keys = [];
     if (g.phase === g.PHASE.PRESEASON) {
         // Preseason
-        keys = ["untilRegularSeason"];
+        keys = ["untilRegularSeason", "m1v1"];
     } else if (g.phase === g.PHASE.REGULAR_SEASON) {
         // Regular season - pre trading deadline
-        keys = ["day", "dayLive", "week", "month", "untilPlayoffs"];
+        keys = ["day", "dayLive", "week", "month", "untilPlayoffs", "m1v1"];
     } else if (g.phase === g.PHASE.AFTER_TRADE_DEADLINE) {
         // Regular season - post trading deadline
-        keys = ["day", "dayLive", "week", "month", "untilPlayoffs"];
+        keys = ["day", "dayLive", "week", "month", "untilPlayoffs", "m1v1"];
     } else if (g.phase === g.PHASE.PLAYOFFS) {
         // Playoffs
-        keys = ["day", "dayLive", "week", "month", "throughPlayoffs"];
+        keys = ["day", "dayLive", "week", "month", "throughPlayoffs", "m1v1"];
     } else if (g.phase === g.PHASE.BEFORE_DRAFT) {
         // Offseason - pre draft
-        keys = ["untilDraft"];
+        keys = ["untilDraft","m1v1"];
     } else if (g.phase === g.PHASE.DRAFT || g.phase === g.PHASE.FANTASY_DRAFT) {
         // Draft
-        keys = ["viewDraft"];
+        keys = ["viewDraft","m1v1"];
     } else if (g.phase === g.PHASE.AFTER_DRAFT) {
         // Offseason - post draft
-        keys = ["untilResignPlayers"];
+        keys = ["untilResignPlayers","m1v1"];
     } else if (g.phase === g.PHASE.RESIGN_PLAYERS) {
         // Offseason - re-sign players
-        keys = ["contractNegotiationList", "untilFreeAgency"];
+        keys = ["contractNegotiationList", "untilFreeAgency","m1v1"];
     } else if (g.phase === g.PHASE.FREE_AGENCY) {
         // Offseason - free agency
-        keys = ["day", "week", "untilPreseason"];
+        keys = ["day", "week", "untilPreseason","m1v1"];
     }
-	keys.push("m1v1");
+	//keys.push("m1v1");
 
     const [unreadMessage, gamesInProgress, negotiationInProgress, phaseChangeInProgress] = await Promise.all([
         lock.unreadMessage(tx),

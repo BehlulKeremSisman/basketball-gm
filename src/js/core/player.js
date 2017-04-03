@@ -96,6 +96,53 @@ function winRatio(player1: Player | PlayerWithoutPid, player2: Player | PlayerWi
         return 1;
 }
 
+function update1v1Ratings(winner: Player | PlayerWithoutPid, loser: Player | PlayerWithoutPid, winRatio: number): number{
+    let chance = 0;
+    switch(winRatio){
+        case 0.1: chance=1;
+        break;
+        case 0.2: chance=0.9;
+        break;
+        case 0.3: chance=0.8;
+        break;
+        case 0.4: chance=0.7;
+        break;
+        case 0.45: chance=0.4;
+        break;
+        case 0.5: chance=0.30;
+        break;
+        case 0.55: chance=0.20;
+        break;
+        case 0.6: chance=0.15;
+        break;
+        case 0.7: chance=0.1;
+        break;
+        case 0.8: chance=0;//kazanma şansı %80 ve üzerindeyse stat güncelleme yapma(oyun dengesinin korunması için)
+        break;
+        case 0.9: chance=0;
+        break;
+
+    }
+
+    if(Math.random() < chance){//kazanma şansına göre kazanan ve kaybeden oyuncuların rating güncellemeleri
+        console.log(chance+" ratingler güncellendi");
+         winner.ratings[0].endu++;
+         winner.ratings[0].drb++;
+         winner.ratings[0].fg++;
+         winner.ratings[0].stre++;
+         winner.ratings[0].reb++;
+         winner.ratings[0].ins++;
+         loser.ratings[0].endu--;
+         loser.ratings[0].drb--;
+         loser.ratings[0].fg--;
+         loser.ratings[0].stre--;
+         loser.ratings[0].reb--;
+         loser.ratings[0].ins--;
+         return chance;
+     }
+     return 0;
+}
+
 function fuzzRating(rating: number, fuzz: number): number {
     // Turn off fuzz in multi team mode, because it doesn't have any meaning there in its current form
     if (g.userTids.length > 1 || g.godMode) {
@@ -2455,4 +2502,5 @@ export {
     killOne,
     withStats,
     winRatio,
+    update1v1Ratings,
 };

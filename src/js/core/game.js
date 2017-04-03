@@ -627,16 +627,36 @@ async function play1v1() {
             const competitors = await findCompetitors(tx, g.userTid, Math.floor(Math.random() * 30));
             const p1 = competitors.p1;
             const p2 = competitors.p2;
-            console.log(p1.ratings);
-            console.log(p2.ratings);
+            //console.log(p1.ratings);
+            //console.log(p2.ratings);
             console.log(player.ovr(p1.ratings[0]));
             console.log(player.ovr(p2.ratings[0]));
-            const winner = (Math.random() < player.winRatio(p1, p2)) ? p1 : p2;//winratio fonksiyonu p1 in kazanma şansını döner.(Math.randomun ürettiği sayı winratio nun döndüğü sayı dilimi içerisindeyse p1 kazanır.)                                                                  
-            console.log(player.winRatio(p1, p2));
+            let winRatio = player.winRatio(p1, p2);
+            let winner;
+            let updatedChance = 0;
+            if((Math.random() < winRatio)){
+             winner = p1;
+             updatedChance = player.update1v1Ratings(p1,p2,winRatio);//kazanan p1 ise p1 in kazanma şansı,p2 ise p2 nin kazanma şansı yollanır
+            }
+            else{
+             winner = p2;
+             updatedChance = player.update1v1Ratings(p2,p1,1-winRatio); //winratio fonksiyonu p1 in kazanma şansını döner.(Math.randomun ürettiği sayı winratio nun döndüğü sayı dilimi içerisindeyse p1 kazanır.)                                                                  
+            }
+            console.log(winRatio);
             logEvent(null, {
                     text: `${p1.firstName} ${p1.lastName} vs ${p2.firstName} ${p2.lastName}<br>Winner is: ${winner.firstName} ${winner.lastName}`,
                     showNotification: true,
             });
+            if(updatedChance  != 0){
+                console.log(player.ovr(p1.ratings[0]));
+                console.log(player.ovr(p2.ratings[0]));
+                logEvent(null, {
+                    text: `Ratings are updated. Chance of updatement was ${updatedChance}.`,
+                    showNotification: true,
+                });
+                await tx.players.put(p1);
+                await tx.players.put(p2);
+            }
     });
 }
 
