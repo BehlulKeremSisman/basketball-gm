@@ -502,7 +502,7 @@ function develop < T: {
                 }
             }
 
-            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocalFitness * random.uniform(0.6, 1.4));
+            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocalFitness * random.uniform(0.9, 1.4));
         }
 
         // Ratings that can only increase a little, and only when young. Decrease slowly when old.
@@ -535,7 +535,7 @@ function develop < T: {
                 }
             }
 
-            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocalPass * random.uniform(0.6, 1.4));
+            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocalPass * random.uniform(0.9, 1.4));
         }
 
         // Ratings that can increase a lot, but only when young. Decrease when old.
@@ -567,7 +567,7 @@ function develop < T: {
                     baseChangeLocalDefence = baseChange - 4;
                 }
             }
-            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocalDefence * random.uniform(0.6, 1.4));
+            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocalDefence * random.uniform(0.9, 1.4));
         }
 
         // Ratings that increase most when young, but can continue increasing for a while and only decrease very slowly.
@@ -600,7 +600,7 @@ function develop < T: {
                 }
             }
 
-            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocalShoot * random.uniform(0.6, 1.4));
+            p.ratings[r][ratingKeys[j]] = limitRating(p.ratings[r][ratingKeys[j]] + baseChangeLocalShoot * random.uniform(0.9, 1.4));
         }
 
         // Update overall and potential
